@@ -1,0 +1,123 @@
+/* O menu é sempre roxo escuro (--brand-chrome), nos dois temas. */
+.sidebar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 240px;
+  height: 100vh;
+  overflow-y: auto;
+  border-right: 1px solid var(--brand-chrome-border);
+  background: var(--brand-chrome);
+  color: #fff;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 16px 16px;
+  border-bottom: 1px solid var(--brand-chrome-border);
+}
+
+.mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--primary);
+  font-size: 16px;
+}
+
+.brandText {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  overflow: hidden;
+  font-size: 14.3px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sub {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.nav {
+  padding-bottom: 16px;
+}
+
+.group {
+  padding: 4px 12px;
+}
+
+.groupLabel {
+  padding: 16px 12px 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 2px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.item:hover {
+  background: var(--brand-chrome-2);
+  color: #fff;
+}
+
+.active,
+.active:hover {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  box-shadow: var(--shadow-md);
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 20px;
+  font-size: 16px;
+  text-align: center;
+}
+
+/* Abaixo de 860px o menu sai da tela e abre por cima do conteúdo. */
+@media (max-width: 860px) {
+  .sidebar {
+    position: fixed;
+    left: -248px;
+    transition: left 0.18s ease;
+  }
+
+  .open {
+    left: 0;
+  }
+}

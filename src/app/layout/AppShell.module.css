@@ -1,0 +1,46 @@
+.shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.content {
+  flex: 1;
+  padding: 26px 28px 60px;
+  animation: fade-in 0.2s ease;
+}
+
+.scrim {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .content {
+    padding: 18px 16px 48px;
+  }
+
+  .scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 15;
+    display: block;
+    background: rgba(24, 18, 34, 0.45);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -1,0 +1,1 @@
+export { residentsRoutes } from './routes';

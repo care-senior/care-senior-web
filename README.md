@@ -98,7 +98,7 @@ O `AppShell` desenha a sidebar e a topbar do protótipo. O título e o subtítul
 1. A care-senior-api publica a spec OpenAPI do NestJS em `/api/docs-json`.
 2. `npm run api:sync` salva essa spec em `openapi/care-senior-api.json`. O arquivo é versionado: o build não depende da API rodando e o diff mostra no PR o que mudou no contrato.
 3. `npm run api:generate` gera em `src/shared/api/generated/`:
-   - `endpoints/<tag>/<tag>.ts`: funções e hooks do TanStack Query (`useXxx`, `getXxxQueryKey`, ...), um arquivo por tag do Swagger. Cada controller do Nest vira uma tag, então cada domínio da API ganha o seu arquivo;
+   - `endpoints/<tag>/<tag>.ts`: funções e hooks do TanStack Query, um arquivo por tag do Swagger. Cada controller do Nest vira uma tag, então cada domínio da API ganha o seu arquivo. O nome vem do `operationId` sem o `Controller` (`ResidentsController_findAll` vira `residentsFindAll`, `useResidentsFindAll`, `getResidentsFindAllQueryKey`, ...);
    - `model/`: os tipos dos DTOs.
 4. Todo request passa por `src/shared/api/http-client.ts`, o mutator do Orval. Ele aplica a `baseURL`, o token Bearer e a normalização de erros: toda falha chega como `ApiError`, já com as mensagens do `ValidationPipe` do Nest.
 

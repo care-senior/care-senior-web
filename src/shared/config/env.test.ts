@@ -1,8 +1,8 @@
 import { parseEnv } from './env';
 
 describe('parseEnv', () => {
-  it('usa /api quando VITE_API_URL não é definida', () => {
-    expect(parseEnv({}).VITE_API_URL).toBe('/api');
+  it('usa a mesma origem quando VITE_API_URL não é definida', () => {
+    expect(parseEnv({}).VITE_API_URL).toBe('');
   });
 
   it('aceita uma URL absoluta', () => {
@@ -11,8 +11,8 @@ describe('parseEnv', () => {
     });
   });
 
-  it('falha com VITE_API_URL vazia', () => {
-    expect(() => parseEnv({ VITE_API_URL: '  ' })).toThrow(
+  it('falha com um caminho relativo, já que as rotas geradas trazem /api/v1', () => {
+    expect(() => parseEnv({ VITE_API_URL: '/api' })).toThrow(
       /Variáveis de ambiente inválidas/,
     );
   });

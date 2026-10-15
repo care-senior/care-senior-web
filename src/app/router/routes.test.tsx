@@ -1,4 +1,4 @@
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { paths } from '@/shared/routing';
@@ -17,7 +17,9 @@ describe('rotas da aplicação', () => {
     expect(
       within(menu).getByRole('link', { name: /Dashboard/ }),
     ).toHaveAttribute('aria-current', 'page');
-    expect(document.title).toBe('Dashboard · Care Senior');
+    await waitFor(() => {
+      expect(document.title).toBe('Dashboard · Care Senior');
+    });
   });
 
   it('navega pelo menu lateral e atualiza a topbar', async () => {

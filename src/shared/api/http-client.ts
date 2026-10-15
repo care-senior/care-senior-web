@@ -6,7 +6,11 @@ import { toApiError, type ApiError } from './api-error';
 
 export const axiosInstance = axios.create({
   baseURL: env.VITE_API_URL,
-  headers: { Accept: 'application/json' },
+  withCredentials: true,
+  headers: {
+    Accept: 'application/json',
+    'x-client-platform': 'web',
+  },
 });
 
 let getAccessToken: () => string | null | undefined = () => null;

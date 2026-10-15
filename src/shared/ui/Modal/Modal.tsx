@@ -19,7 +19,8 @@ export interface ModalProps {
 
 /**
  * Modal sobre `<dialog>` nativo: o browser cuida do foco preso, do Esc e da
- * camada acima do resto da página. Fecha também clicando no fundo.
+ * camada acima do resto da página. Fecha também clicando no fundo. O foco
+ * inicial vai para o elemento marcado com `data-autofocus`, se houver.
  */
 export function Modal({
   open,
@@ -37,7 +38,10 @@ export function Modal({
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
+    if (open && !dialog.open) {
+      dialog.showModal();
+      dialog.querySelector<HTMLElement>('[data-autofocus]')?.focus();
+    }
     if (!open && dialog.open) dialog.close();
   }, [open]);
 

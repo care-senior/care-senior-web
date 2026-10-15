@@ -69,7 +69,9 @@ export function InactivityWarning() {
           <Button variant="ghost" onClick={() => void session.signOut()}>
             Sair
           </Button>
-          <Button onClick={stayConnected}>Continuar conectado</Button>
+          <Button data-autofocus onClick={stayConnected}>
+            Continuar conectado
+          </Button>
         </>
       }
     />

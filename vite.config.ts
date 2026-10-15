@@ -17,12 +17,9 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5173,
       proxy: {
-        // A care-senior-api não tem prefixo global e (ainda) não habilita
-        // CORS: em dev o browser fala com /api e o Vite repassa sem o prefixo.
         '/api': {
           target: apiProxyTarget,
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
         },
       },
     },

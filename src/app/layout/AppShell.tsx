@@ -1,6 +1,7 @@
 import { useId, useState } from 'react';
 import { Outlet } from 'react-router';
 
+import { UserMenu } from '@/modules/auth';
 import { APP_NAME, useDocumentTitle, useRouteHandle } from '@/shared/routing';
 
 import styles from './AppShell.module.css';
@@ -37,6 +38,7 @@ export function AppShell() {
           sidebarId={sidebarId}
           sidebarOpen={sidebarOpen}
           onToggleSidebar={() => setSidebarOpen((open) => !open)}
+          actions={<UserMenu />}
         />
         <main className={styles.content}>
           <Outlet />

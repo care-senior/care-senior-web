@@ -1,7 +1,8 @@
 import { NavLink } from 'react-router';
 
+import { useCurrentClinic } from '@/modules/clinic';
 import { cx } from '@/shared/lib/cx';
-import { paths } from '@/shared/routing';
+import { APP_NAME, paths } from '@/shared/routing';
 
 import { navigation } from './navigation';
 import styles from './Sidebar.module.css';
@@ -13,6 +14,8 @@ export interface SidebarProps {
 }
 
 export function Sidebar({ id, open, onNavigate }: SidebarProps) {
+  const { data: clinic } = useCurrentClinic();
+
   return (
     <aside id={id} className={cx(styles.sidebar, open && styles.open)}>
       <div className={styles.brand}>
@@ -20,8 +23,7 @@ export function Sidebar({ id, open, onNavigate }: SidebarProps) {
           🩺
         </div>
         <div className={styles.brandText}>
-          {/* Vira o nome da clínica do colaborador logado quando houver auth. */}
-          <div className={styles.name}>Care Senior</div>
+          <div className={styles.name}>{clinic?.name ?? APP_NAME}</div>
           <div className={styles.sub}>Painel da clínica</div>
         </div>
       </div>

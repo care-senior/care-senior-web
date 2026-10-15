@@ -9,11 +9,6 @@ import { defineConfig } from 'orval';
  * seu próprio arquivo de hooks, consumido pelo módulo equivalente em
  * `src/modules/<domínio>/api`.
  */
-const toOperationName = (operationId: string) =>
-  operationId
-    .replace(/Controller_(\w)/, (_, initial: string) => initial.toUpperCase())
-    .replace(/^\w/, (initial) => initial.toLowerCase());
-
 export default defineConfig({
   careSeniorApi: {
     input: {
@@ -28,7 +23,6 @@ export default defineConfig({
       clean: true,
       formatter: 'prettier',
       override: {
-        operationName: ({ operationId = '' }) => toOperationName(operationId),
         mutator: {
           path: './src/shared/api/http-client.ts',
           name: 'httpClient',

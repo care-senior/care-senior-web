@@ -25,7 +25,7 @@ cp .env.example .env
 npm run dev        # http://localhost:5173
 ```
 
-Com a care-senior-api rodando (`docker compose up` no repo dela), o Vite repassa `/api/*` para `API_PROXY_TARGET` (padrão `http://localhost:3000`). Como as rotas geradas já trazem o prefixo `/api/v1`, `VITE_API_URL` fica vazia em dev (mesma origem) e só recebe a origem da API em produção. Assim o browser não esbarra em CORS e o cookie do refresh token funciona durante o desenvolvimento.
+Com a care-senior-api rodando (`docker compose up` no repo dela), o Vite repassa `/api/*` para `API_PROXY_TARGET` (padrão `http://localhost:3000`), sem o prefixo `/api`. Assim o browser não esbarra em CORS durante o desenvolvimento.
 
 ## Scripts
 
@@ -98,9 +98,9 @@ O `AppShell` desenha a sidebar e a topbar do protótipo. O título e o subtítul
 1. A care-senior-api publica a spec OpenAPI do NestJS em `/api/docs-json`.
 2. `npm run api:sync` salva essa spec em `openapi/care-senior-api.json`. O arquivo é versionado: o build não depende da API rodando e o diff mostra no PR o que mudou no contrato.
 3. `npm run api:generate` gera em `src/shared/api/generated/`:
-   - `endpoints/<tag>/<tag>.ts`: funções e hooks do TanStack Query, um arquivo por tag do Swagger. Cada controller do Nest vira uma tag, então cada domínio da API ganha o seu arquivo. O nome vem do `operationId` sem o `Controller` (`ResidentsController_findAll` vira `residentsFindAll`, `useResidentsFindAll`, `getResidentsFindAllQueryKey`, ...);
+   - `endpoints/<tag>/<tag>.ts`: funções e hooks do TanStack Query (`useXxx`, `getXxxQueryKey`, ...), um arquivo por tag do Swagger. Cada controller do Nest vira uma tag, então cada domínio da API ganha o seu arquivo;
    - `model/`: os tipos dos DTOs.
-4. Todo request passa por `src/shared/api/http-client.ts`, o mutator do Orval. Ele aplica a `baseURL`, o token Bearer, o header `x-client-platform: web` (a API devolve o refresh token num cookie httpOnly em vez do body) e a normalização de erros: toda falha chega como `ApiError`, já com as mensagens do `ValidationPipe` do Nest.
+4. Todo request passa por `src/shared/api/http-client.ts`, o mutator do Orval. Ele aplica a `baseURL`, o token Bearer e a normalização de erros: toda falha chega como `ApiError`, já com as mensagens do `ValidationPipe` do Nest.
 
 Nunca edite `generated/` à mão. O CI regenera o cliente e falha se o resultado não bater com o que foi commitado.
 

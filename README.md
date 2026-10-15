@@ -47,6 +47,7 @@ Com a care-senior-api rodando (`docker compose up` no repo dela), o Vite repassa
 src/
  ├── app/                 # Composition root: providers, roteador, layout (sidebar + topbar)
  ├── modules/             # Uma pasta por área do painel — espelha o menu do protótipo
+ │    ├── auth/           # Login, sessão, inatividade e páginas de senha (públicas)
  │    ├── dashboard/
  │    ├── staff/          # Colaboradores
  │    ├── residents/      # Idosos
@@ -88,6 +89,18 @@ modules/residents/
 ```
 
 Para criar uma tela nova: crie o módulo, exporte `xxxRoutes` no `index.ts`, registre em `src/app/router/routes.tsx` e adicione o item em `src/app/layout/navigation.ts`.
+
+### Autenticação
+
+O painel é só para colaboradores (`POST /auth/staff/login`), de qualquer papel: o que cada papel pode fazer é tratado nas telas. Tudo fica em `modules/auth`:
+
+- **Sessão em memória.** O access token nunca vai para o `localStorage`. O refresh token chega num cookie `httpOnly` (o cliente HTTP manda `x-client-platform: web`), então recarregar a página ou abrir outra aba recupera a sessão com `POST /auth/refresh`.
+- **Renovação uma por vez.** Cada refresh troca o refresh token, e a API derruba a sessão se um token já usado for reapresentado. Por isso, quando um request recebe 401, o cliente HTTP pede à sessão uma única renovação, compartilhada por todos os 401 da aba e serializada entre abas com Web Locks, e refaz o request uma vez.
+- **Abas sincronizadas.** Sair em uma aba encerra as outras (`BroadcastChannel`), e entrar em uma faz as abas paradas no login entrarem também.
+- **Inatividade.** Depois de 30 minutos sem uso (clique, tecla ou rolagem em qualquer aba) a sessão é encerrada, com aviso no último minuto. Se o navegador ficou fechado mais tempo que isso, a sessão também não é recuperada.
+- **Rotas.** `RequireSession` protege o layout do painel e manda quem não está logado para `/entrar?redirectTo=<página>`. As páginas públicas ficam no `AuthLayout`: `/entrar`, `/esqueci-senha` e as que a API manda por e-mail (`/redefinir-senha`, `/criar-senha` e `/responsavel/criar-senha`, esta última para o responsável, que depois entra pelo app).
+
+Com a API local e o seed rodados, entre com `coordenadora@caresenior.dev` / `careSenior123`. Os e-mails de convite e de redefinição aparecem no Mailpit (`http://localhost:8025`).
 
 ### Layout e metadados de rota
 

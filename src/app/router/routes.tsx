@@ -1,3 +1,4 @@
+import { AuthLayout, authRoutes, RequireSession } from '@/modules/auth';
 import { clinicRoutes } from '@/modules/clinic';
 import { dashboardRoutes } from '@/modules/dashboard';
 import { reportsRoutes } from '@/modules/reports';
@@ -19,7 +20,16 @@ import { RouteError } from './RouteError';
  */
 export const routes: AppRoute[] = [
   {
-    element: <AppShell />,
+    element: <AuthLayout />,
+    errorElement: <RouteError />,
+    children: authRoutes,
+  },
+  {
+    element: (
+      <RequireSession>
+        <AppShell />
+      </RequireSession>
+    ),
     errorElement: <RouteError />,
     children: [
       {

@@ -11,6 +11,11 @@ export const paths = {
   requests: '/solicitacoes',
   reports: '/relatorios',
   clinic: '/clinica',
+  login: '/entrar',
+  forgotPassword: '/esqueci-senha',
+  resetPassword: '/redefinir-senha',
+  staffInvite: '/criar-senha',
+  guardianInvite: '/responsavel/criar-senha',
 } as const;
 
 export type AppPath = (typeof paths)[keyof typeof paths];

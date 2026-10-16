@@ -41,4 +41,17 @@ describe('Modal', () => {
 
     expect(onClose).toHaveBeenCalledOnce();
   });
+
+  it('foca o elemento marcado com data-autofocus ao abrir', () => {
+    render(
+      <Modal
+        open
+        onClose={() => {}}
+        title="Você ainda está aí?"
+        footer={<button data-autofocus>Continuar</button>}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: 'Continuar' })).toHaveFocus();
+  });
 });

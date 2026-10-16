@@ -1,0 +1,29 @@
+.splash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 0;
+  font-size: 13.5px;
+  color: var(--ink-muted);
+}
+
+.fullScreen {
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--primary-soft);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

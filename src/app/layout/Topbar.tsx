@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 import { IconButton } from '@/shared/ui';
 
 import styles from './Topbar.module.css';
@@ -8,6 +10,7 @@ export interface TopbarProps {
   sidebarId: string;
   sidebarOpen: boolean;
   onToggleSidebar: () => void;
+  actions?: ReactNode;
 }
 
 export function Topbar({
@@ -16,6 +19,7 @@ export function Topbar({
   sidebarId,
   sidebarOpen,
   onToggleSidebar,
+  actions,
 }: TopbarProps) {
   return (
     <header className={styles.topbar}>
@@ -34,7 +38,7 @@ export function Topbar({
           {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
         </div>
       </div>
-      {/* Busca global, notificações e usuário entram aqui com seus módulos. */}
+      {actions}
     </header>
   );
 }

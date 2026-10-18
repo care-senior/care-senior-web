@@ -5,15 +5,18 @@
  * API do Care Senior — app mobile e web app administrativo
  * OpenAPI spec version: 1.0
  */
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
@@ -387,167 +390,78 @@ export const residentsUpdate = (
   );
 };
 
-export const getResidentsUpdateQueryKey = (
-  id: string,
-  updateResidentDto?: BodyType<UpdateResidentDto>,
-) => {
-  return ['PATCH', `/api/v1/residents/${id}`, updateResidentDto] as const;
-};
+export const getResidentsUpdateMutationKey = () => ['residentsUpdate'] as const;
 
-export const getResidentsUpdateQueryOptions = <
-  TData = Awaited<ReturnType<typeof residentsUpdate>>,
+export const getResidentsUpdateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  updateResidentDto: BodyType<UpdateResidentDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsUpdate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getResidentsUpdateQueryKey(id, updateResidentDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof residentsUpdate>>> = ({
-    signal,
-  }) => residentsUpdate(id, updateResidentDto, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof residentsUpdate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    ResidentsUpdateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof residentsUpdate>>,
+  TError,
+  ResidentsUpdateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getResidentsUpdateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof residentsUpdate>>,
+    ResidentsUpdateMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return residentsUpdate(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type ResidentsUpdateQueryResult = NonNullable<
+export type ResidentsUpdateMutationResult = NonNullable<
   Awaited<ReturnType<typeof residentsUpdate>>
 >;
-export type ResidentsUpdateQueryError = ErrorType<unknown>;
+export type ResidentsUpdateMutationBody = BodyType<UpdateResidentDto>;
+export type ResidentsUpdateMutationError = ErrorType<unknown>;
+export type ResidentsUpdateMutationVariables = {
+  id: string;
+  data: BodyType<UpdateResidentDto>;
+};
 
-export function useResidentsUpdate<
-  TData = Awaited<ReturnType<typeof residentsUpdate>>,
+export const useResidentsUpdate = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  updateResidentDto: BodyType<UpdateResidentDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsUpdate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof residentsUpdate>>,
-          TError,
-          Awaited<ReturnType<typeof residentsUpdate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useResidentsUpdate<
-  TData = Awaited<ReturnType<typeof residentsUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateResidentDto: BodyType<UpdateResidentDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsUpdate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof residentsUpdate>>,
-          TError,
-          Awaited<ReturnType<typeof residentsUpdate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useResidentsUpdate<
-  TData = Awaited<ReturnType<typeof residentsUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateResidentDto: BodyType<UpdateResidentDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsUpdate>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof residentsUpdate>>,
+      TError,
+      ResidentsUpdateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof residentsUpdate>>,
+  TError,
+  ResidentsUpdateMutationVariables,
+  TContext
+> => {
+  return useMutation(getResidentsUpdateMutationOptions(options), queryClient);
 };
-
-export function useResidentsUpdate<
-  TData = Awaited<ReturnType<typeof residentsUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateResidentDto: BodyType<UpdateResidentDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsUpdate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getResidentsUpdateQueryOptions(
-    id,
-    updateResidentDto,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 /**
  * @summary Accepts a pending link request, placing the resident in a room of the caller clinic.
  */
@@ -569,146 +483,81 @@ export const residentsLink = (
   );
 };
 
-export const getResidentsLinkQueryKey = (
-  id: string,
-  assignRoomDto?: BodyType<AssignRoomDto>,
-) => {
-  return ['POST', `/api/v1/residents/${id}/link`, assignRoomDto] as const;
-};
+export const getResidentsLinkMutationKey = () => ['residentsLink'] as const;
 
-export const getResidentsLinkQueryOptions = <
-  TData = Awaited<ReturnType<typeof residentsLink>>,
+export const getResidentsLinkMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  assignRoomDto: BodyType<AssignRoomDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof residentsLink>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getResidentsLinkQueryKey(id, assignRoomDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof residentsLink>>> = ({
-    signal,
-  }) => residentsLink(id, assignRoomDto, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof residentsLink>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    ResidentsLinkMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof residentsLink>>,
+  TError,
+  ResidentsLinkMutationVariables,
+  TContext
+> => {
+  const mutationKey = getResidentsLinkMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof residentsLink>>,
+    ResidentsLinkMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return residentsLink(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type ResidentsLinkQueryResult = NonNullable<
+export type ResidentsLinkMutationResult = NonNullable<
   Awaited<ReturnType<typeof residentsLink>>
 >;
-export type ResidentsLinkQueryError = ErrorType<unknown>;
+export type ResidentsLinkMutationBody = BodyType<AssignRoomDto>;
+export type ResidentsLinkMutationError = ErrorType<unknown>;
+export type ResidentsLinkMutationVariables = {
+  id: string;
+  data: BodyType<AssignRoomDto>;
+};
 
-export function useResidentsLink<
-  TData = Awaited<ReturnType<typeof residentsLink>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  assignRoomDto: BodyType<AssignRoomDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof residentsLink>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof residentsLink>>,
-          TError,
-          Awaited<ReturnType<typeof residentsLink>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useResidentsLink<
-  TData = Awaited<ReturnType<typeof residentsLink>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  assignRoomDto: BodyType<AssignRoomDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof residentsLink>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof residentsLink>>,
-          TError,
-          Awaited<ReturnType<typeof residentsLink>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useResidentsLink<
-  TData = Awaited<ReturnType<typeof residentsLink>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  assignRoomDto: BodyType<AssignRoomDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof residentsLink>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
 /**
  * @summary Accepts a pending link request, placing the resident in a room of the caller clinic.
  */
-
-export function useResidentsLink<
-  TData = Awaited<ReturnType<typeof residentsLink>>,
+export const useResidentsLink = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  assignRoomDto: BodyType<AssignRoomDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof residentsLink>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof residentsLink>>,
+      TError,
+      ResidentsLinkMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getResidentsLinkQueryOptions(id, assignRoomDto, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+): UseMutationResult<
+  Awaited<ReturnType<typeof residentsLink>>,
+  TError,
+  ResidentsLinkMutationVariables,
+  TContext
+> => {
+  return useMutation(getResidentsLinkMutationOptions(options), queryClient);
+};
 export const residentsDischarge = (
   id: string,
   options?: SecondParameter<typeof httpClient>,
@@ -720,154 +569,79 @@ export const residentsDischarge = (
   );
 };
 
-export const getResidentsDischargeQueryKey = (id: string) => {
-  return ['POST', `/api/v1/residents/${id}/discharge`] as const;
-};
+export const getResidentsDischargeMutationKey = () =>
+  ['residentsDischarge'] as const;
 
-export const getResidentsDischargeQueryOptions = <
-  TData = Awaited<ReturnType<typeof residentsDischarge>>,
+export const getResidentsDischargeMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsDischarge>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getResidentsDischargeQueryKey(id);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof residentsDischarge>>
-  > = ({ signal }) => residentsDischarge(id, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof residentsDischarge>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    ResidentsDischargeMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof residentsDischarge>>,
+  TError,
+  ResidentsDischargeMutationVariables,
+  TContext
+> => {
+  const mutationKey = getResidentsDischargeMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof residentsDischarge>>,
+    ResidentsDischargeMutationVariables
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return residentsDischarge(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type ResidentsDischargeQueryResult = NonNullable<
+export type ResidentsDischargeMutationResult = NonNullable<
   Awaited<ReturnType<typeof residentsDischarge>>
 >;
-export type ResidentsDischargeQueryError = ErrorType<unknown>;
 
-export function useResidentsDischarge<
-  TData = Awaited<ReturnType<typeof residentsDischarge>>,
+export type ResidentsDischargeMutationError = ErrorType<unknown>;
+export type ResidentsDischargeMutationVariables = { id: string };
+
+export const useResidentsDischarge = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsDischarge>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof residentsDischarge>>,
-          TError,
-          Awaited<ReturnType<typeof residentsDischarge>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useResidentsDischarge<
-  TData = Awaited<ReturnType<typeof residentsDischarge>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsDischarge>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof residentsDischarge>>,
-          TError,
-          Awaited<ReturnType<typeof residentsDischarge>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useResidentsDischarge<
-  TData = Awaited<ReturnType<typeof residentsDischarge>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsDischarge>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof residentsDischarge>>,
+      TError,
+      ResidentsDischargeMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof residentsDischarge>>,
+  TError,
+  ResidentsDischargeMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getResidentsDischargeMutationOptions(options),
+    queryClient,
+  );
 };
-
-export function useResidentsDischarge<
-  TData = Awaited<ReturnType<typeof residentsDischarge>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsDischarge>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getResidentsDischargeQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 export const residentsChangeRoom = (
   id: string,
   assignRoomDto: BodyType<AssignRoomDto>,
@@ -886,172 +660,82 @@ export const residentsChangeRoom = (
   );
 };
 
-export const getResidentsChangeRoomQueryKey = (
-  id: string,
-  assignRoomDto?: BodyType<AssignRoomDto>,
-) => {
-  return [
-    'POST',
-    `/api/v1/residents/${id}/change-room`,
-    assignRoomDto,
-  ] as const;
-};
+export const getResidentsChangeRoomMutationKey = () =>
+  ['residentsChangeRoom'] as const;
 
-export const getResidentsChangeRoomQueryOptions = <
-  TData = Awaited<ReturnType<typeof residentsChangeRoom>>,
+export const getResidentsChangeRoomMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  assignRoomDto: BodyType<AssignRoomDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsChangeRoom>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getResidentsChangeRoomQueryKey(id, assignRoomDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof residentsChangeRoom>>
-  > = ({ signal }) =>
-    residentsChangeRoom(id, assignRoomDto, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof residentsChangeRoom>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    ResidentsChangeRoomMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof residentsChangeRoom>>,
+  TError,
+  ResidentsChangeRoomMutationVariables,
+  TContext
+> => {
+  const mutationKey = getResidentsChangeRoomMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof residentsChangeRoom>>,
+    ResidentsChangeRoomMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return residentsChangeRoom(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type ResidentsChangeRoomQueryResult = NonNullable<
+export type ResidentsChangeRoomMutationResult = NonNullable<
   Awaited<ReturnType<typeof residentsChangeRoom>>
 >;
-export type ResidentsChangeRoomQueryError = ErrorType<unknown>;
+export type ResidentsChangeRoomMutationBody = BodyType<AssignRoomDto>;
+export type ResidentsChangeRoomMutationError = ErrorType<unknown>;
+export type ResidentsChangeRoomMutationVariables = {
+  id: string;
+  data: BodyType<AssignRoomDto>;
+};
 
-export function useResidentsChangeRoom<
-  TData = Awaited<ReturnType<typeof residentsChangeRoom>>,
+export const useResidentsChangeRoom = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  assignRoomDto: BodyType<AssignRoomDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsChangeRoom>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof residentsChangeRoom>>,
-          TError,
-          Awaited<ReturnType<typeof residentsChangeRoom>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useResidentsChangeRoom<
-  TData = Awaited<ReturnType<typeof residentsChangeRoom>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  assignRoomDto: BodyType<AssignRoomDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsChangeRoom>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof residentsChangeRoom>>,
-          TError,
-          Awaited<ReturnType<typeof residentsChangeRoom>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useResidentsChangeRoom<
-  TData = Awaited<ReturnType<typeof residentsChangeRoom>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  assignRoomDto: BodyType<AssignRoomDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsChangeRoom>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof residentsChangeRoom>>,
+      TError,
+      ResidentsChangeRoomMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useResidentsChangeRoom<
-  TData = Awaited<ReturnType<typeof residentsChangeRoom>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  assignRoomDto: BodyType<AssignRoomDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsChangeRoom>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getResidentsChangeRoomQueryOptions(
-    id,
-    assignRoomDto,
-    options,
+): UseMutationResult<
+  Awaited<ReturnType<typeof residentsChangeRoom>>,
+  TError,
+  ResidentsChangeRoomMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getResidentsChangeRoomMutationOptions(options),
+    queryClient,
   );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+};
 export const residentsFindGuardians = (
   id: string,
   params?: ResidentsFindGuardiansParams,
@@ -1250,172 +934,85 @@ export const residentsAddGuardian = (
   );
 };
 
-export const getResidentsAddGuardianQueryKey = (
-  id: string,
-  addGuardianDto?: BodyType<AddGuardianDto>,
-) => {
-  return ['POST', `/api/v1/residents/${id}/guardians`, addGuardianDto] as const;
-};
+export const getResidentsAddGuardianMutationKey = () =>
+  ['residentsAddGuardian'] as const;
 
-export const getResidentsAddGuardianQueryOptions = <
-  TData = Awaited<ReturnType<typeof residentsAddGuardian>>,
+export const getResidentsAddGuardianMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  addGuardianDto: BodyType<AddGuardianDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsAddGuardian>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getResidentsAddGuardianQueryKey(id, addGuardianDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof residentsAddGuardian>>
-  > = ({ signal }) =>
-    residentsAddGuardian(id, addGuardianDto, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof residentsAddGuardian>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    ResidentsAddGuardianMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof residentsAddGuardian>>,
+  TError,
+  ResidentsAddGuardianMutationVariables,
+  TContext
+> => {
+  const mutationKey = getResidentsAddGuardianMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof residentsAddGuardian>>,
+    ResidentsAddGuardianMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return residentsAddGuardian(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type ResidentsAddGuardianQueryResult = NonNullable<
+export type ResidentsAddGuardianMutationResult = NonNullable<
   Awaited<ReturnType<typeof residentsAddGuardian>>
 >;
-export type ResidentsAddGuardianQueryError = ErrorType<unknown>;
+export type ResidentsAddGuardianMutationBody = BodyType<AddGuardianDto>;
+export type ResidentsAddGuardianMutationError = ErrorType<unknown>;
+export type ResidentsAddGuardianMutationVariables = {
+  id: string;
+  data: BodyType<AddGuardianDto>;
+};
 
-export function useResidentsAddGuardian<
-  TData = Awaited<ReturnType<typeof residentsAddGuardian>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  addGuardianDto: BodyType<AddGuardianDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsAddGuardian>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof residentsAddGuardian>>,
-          TError,
-          Awaited<ReturnType<typeof residentsAddGuardian>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useResidentsAddGuardian<
-  TData = Awaited<ReturnType<typeof residentsAddGuardian>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  addGuardianDto: BodyType<AddGuardianDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsAddGuardian>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof residentsAddGuardian>>,
-          TError,
-          Awaited<ReturnType<typeof residentsAddGuardian>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useResidentsAddGuardian<
-  TData = Awaited<ReturnType<typeof residentsAddGuardian>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  addGuardianDto: BodyType<AddGuardianDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsAddGuardian>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
 /**
  * @summary Registers one more guardian for the resident and sends the invite.
  */
-
-export function useResidentsAddGuardian<
-  TData = Awaited<ReturnType<typeof residentsAddGuardian>>,
+export const useResidentsAddGuardian = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  addGuardianDto: BodyType<AddGuardianDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsAddGuardian>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof residentsAddGuardian>>,
+      TError,
+      ResidentsAddGuardianMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getResidentsAddGuardianQueryOptions(
-    id,
-    addGuardianDto,
-    options,
+): UseMutationResult<
+  Awaited<ReturnType<typeof residentsAddGuardian>>,
+  TError,
+  ResidentsAddGuardianMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getResidentsAddGuardianMutationOptions(options),
+    queryClient,
   );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+};
 /**
  * @summary Unlinks the guardian from the resident; the guardian account stays.
  */
@@ -1435,172 +1032,82 @@ export const residentsRemoveGuardian = (
   );
 };
 
-export const getResidentsRemoveGuardianQueryKey = (
-  id: string,
-  guardianId: string,
-) => {
-  return ['DELETE', `/api/v1/residents/${id}/guardians/${guardianId}`] as const;
-};
+export const getResidentsRemoveGuardianMutationKey = () =>
+  ['residentsRemoveGuardian'] as const;
 
-export const getResidentsRemoveGuardianQueryOptions = <
-  TData = Awaited<ReturnType<typeof residentsRemoveGuardian>>,
+export const getResidentsRemoveGuardianMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  guardianId: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsRemoveGuardian>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getResidentsRemoveGuardianQueryKey(id, guardianId);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof residentsRemoveGuardian>>
-  > = ({ signal }) =>
-    residentsRemoveGuardian(id, guardianId, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled:
-      id !== null &&
-      id !== undefined &&
-      guardianId !== null &&
-      guardianId !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof residentsRemoveGuardian>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    ResidentsRemoveGuardianMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof residentsRemoveGuardian>>,
+  TError,
+  ResidentsRemoveGuardianMutationVariables,
+  TContext
+> => {
+  const mutationKey = getResidentsRemoveGuardianMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof residentsRemoveGuardian>>,
+    ResidentsRemoveGuardianMutationVariables
+  > = (props) => {
+    const { id, guardianId } = props ?? {};
+
+    return residentsRemoveGuardian(id, guardianId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type ResidentsRemoveGuardianQueryResult = NonNullable<
+export type ResidentsRemoveGuardianMutationResult = NonNullable<
   Awaited<ReturnType<typeof residentsRemoveGuardian>>
 >;
-export type ResidentsRemoveGuardianQueryError = ErrorType<unknown>;
 
-export function useResidentsRemoveGuardian<
-  TData = Awaited<ReturnType<typeof residentsRemoveGuardian>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  guardianId: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsRemoveGuardian>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof residentsRemoveGuardian>>,
-          TError,
-          Awaited<ReturnType<typeof residentsRemoveGuardian>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+export type ResidentsRemoveGuardianMutationError = ErrorType<unknown>;
+export type ResidentsRemoveGuardianMutationVariables = {
+  id: string;
+  guardianId: string;
 };
-export function useResidentsRemoveGuardian<
-  TData = Awaited<ReturnType<typeof residentsRemoveGuardian>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  guardianId: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsRemoveGuardian>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof residentsRemoveGuardian>>,
-          TError,
-          Awaited<ReturnType<typeof residentsRemoveGuardian>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useResidentsRemoveGuardian<
-  TData = Awaited<ReturnType<typeof residentsRemoveGuardian>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  guardianId: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsRemoveGuardian>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+
 /**
  * @summary Unlinks the guardian from the resident; the guardian account stays.
  */
-
-export function useResidentsRemoveGuardian<
-  TData = Awaited<ReturnType<typeof residentsRemoveGuardian>>,
+export const useResidentsRemoveGuardian = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  guardianId: string,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof residentsRemoveGuardian>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof residentsRemoveGuardian>>,
+      TError,
+      ResidentsRemoveGuardianMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getResidentsRemoveGuardianQueryOptions(
-    id,
-    guardianId,
-    options,
+): UseMutationResult<
+  Awaited<ReturnType<typeof residentsRemoveGuardian>>,
+  TError,
+  ResidentsRemoveGuardianMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getResidentsRemoveGuardianMutationOptions(options),
+    queryClient,
   );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
+};

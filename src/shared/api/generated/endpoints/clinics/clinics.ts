@@ -5,15 +5,18 @@
  * API do Care Senior — app mobile e web app administrativo
  * OpenAPI spec version: 1.0
  */
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
@@ -339,143 +342,75 @@ export const clinicsUpdate = (
   );
 };
 
-export const getClinicsUpdateQueryKey = (
-  id: string,
-  updateClinicDto?: BodyType<UpdateClinicDto>,
-) => {
-  return ['PATCH', `/api/v1/clinics/${id}`, updateClinicDto] as const;
-};
+export const getClinicsUpdateMutationKey = () => ['clinicsUpdate'] as const;
 
-export const getClinicsUpdateQueryOptions = <
-  TData = Awaited<ReturnType<typeof clinicsUpdate>>,
+export const getClinicsUpdateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  updateClinicDto: BodyType<UpdateClinicDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof clinicsUpdate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getClinicsUpdateQueryKey(id, updateClinicDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof clinicsUpdate>>> = ({
-    signal,
-  }) => clinicsUpdate(id, updateClinicDto, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof clinicsUpdate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    ClinicsUpdateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof clinicsUpdate>>,
+  TError,
+  ClinicsUpdateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getClinicsUpdateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof clinicsUpdate>>,
+    ClinicsUpdateMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return clinicsUpdate(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type ClinicsUpdateQueryResult = NonNullable<
+export type ClinicsUpdateMutationResult = NonNullable<
   Awaited<ReturnType<typeof clinicsUpdate>>
 >;
-export type ClinicsUpdateQueryError = ErrorType<unknown>;
+export type ClinicsUpdateMutationBody = BodyType<UpdateClinicDto>;
+export type ClinicsUpdateMutationError = ErrorType<unknown>;
+export type ClinicsUpdateMutationVariables = {
+  id: string;
+  data: BodyType<UpdateClinicDto>;
+};
 
-export function useClinicsUpdate<
-  TData = Awaited<ReturnType<typeof clinicsUpdate>>,
+export const useClinicsUpdate = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  updateClinicDto: BodyType<UpdateClinicDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof clinicsUpdate>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof clinicsUpdate>>,
-          TError,
-          Awaited<ReturnType<typeof clinicsUpdate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useClinicsUpdate<
-  TData = Awaited<ReturnType<typeof clinicsUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateClinicDto: BodyType<UpdateClinicDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof clinicsUpdate>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof clinicsUpdate>>,
-          TError,
-          Awaited<ReturnType<typeof clinicsUpdate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useClinicsUpdate<
-  TData = Awaited<ReturnType<typeof clinicsUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateClinicDto: BodyType<UpdateClinicDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof clinicsUpdate>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof clinicsUpdate>>,
+      TError,
+      ClinicsUpdateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof clinicsUpdate>>,
+  TError,
+  ClinicsUpdateMutationVariables,
+  TContext
+> => {
+  return useMutation(getClinicsUpdateMutationOptions(options), queryClient);
 };
-
-export function useClinicsUpdate<
-  TData = Awaited<ReturnType<typeof clinicsUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateClinicDto: BodyType<UpdateClinicDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof clinicsUpdate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getClinicsUpdateQueryOptions(
-    id,
-    updateClinicDto,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}

@@ -5,15 +5,18 @@
  * API do Care Senior — app mobile e web app administrativo
  * OpenAPI spec version: 1.0
  */
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
@@ -229,135 +232,80 @@ export const routinesCreate = (
   );
 };
 
-export const getRoutinesCreateQueryKey = (
-  createRoutineDto?: BodyType<CreateRoutineDto>,
-) => {
-  return ['POST', `/api/v1/routines`, createRoutineDto] as const;
-};
+export const getRoutinesCreateMutationKey = () => ['routinesCreate'] as const;
 
-export const getRoutinesCreateQueryOptions = <
-  TData = Awaited<ReturnType<typeof routinesCreate>>,
+export const getRoutinesCreateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  createRoutineDto: BodyType<CreateRoutineDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesCreate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getRoutinesCreateQueryKey(createRoutineDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof routinesCreate>>> = ({
-    signal,
-  }) => routinesCreate(createRoutineDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof routinesCreate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    RoutinesCreateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof routinesCreate>>,
+  TError,
+  RoutinesCreateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getRoutinesCreateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof routinesCreate>>,
+    RoutinesCreateMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return routinesCreate(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type RoutinesCreateQueryResult = NonNullable<
+export type RoutinesCreateMutationResult = NonNullable<
   Awaited<ReturnType<typeof routinesCreate>>
 >;
-export type RoutinesCreateQueryError = ErrorType<unknown>;
+export type RoutinesCreateMutationBody = BodyType<CreateRoutineDto>;
+export type RoutinesCreateMutationError = ErrorType<unknown>;
+export type RoutinesCreateMutationVariables = {
+  data: BodyType<CreateRoutineDto>;
+};
 
-export function useRoutinesCreate<
-  TData = Awaited<ReturnType<typeof routinesCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createRoutineDto: BodyType<CreateRoutineDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesCreate>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof routinesCreate>>,
-          TError,
-          Awaited<ReturnType<typeof routinesCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoutinesCreate<
-  TData = Awaited<ReturnType<typeof routinesCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createRoutineDto: BodyType<CreateRoutineDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesCreate>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof routinesCreate>>,
-          TError,
-          Awaited<ReturnType<typeof routinesCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoutinesCreate<
-  TData = Awaited<ReturnType<typeof routinesCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createRoutineDto: BodyType<CreateRoutineDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesCreate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
 /**
  * @summary Also generates its activities for the next 7 days.
  */
-
-export function useRoutinesCreate<
-  TData = Awaited<ReturnType<typeof routinesCreate>>,
+export const useRoutinesCreate = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  createRoutineDto: BodyType<CreateRoutineDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesCreate>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof routinesCreate>>,
+      TError,
+      RoutinesCreateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getRoutinesCreateQueryOptions(createRoutineDto, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+): UseMutationResult<
+  Awaited<ReturnType<typeof routinesCreate>>,
+  TError,
+  RoutinesCreateMutationVariables,
+  TContext
+> => {
+  return useMutation(getRoutinesCreateMutationOptions(options), queryClient);
+};
 export const routinesFindOne = (
   id: string,
   options?: SecondParameter<typeof httpClient>,
@@ -538,150 +486,81 @@ export const routinesUpdate = (
   );
 };
 
-export const getRoutinesUpdateQueryKey = (
-  id: string,
-  updateRoutineDto?: BodyType<UpdateRoutineDto>,
-) => {
-  return ['PATCH', `/api/v1/routines/${id}`, updateRoutineDto] as const;
-};
+export const getRoutinesUpdateMutationKey = () => ['routinesUpdate'] as const;
 
-export const getRoutinesUpdateQueryOptions = <
-  TData = Awaited<ReturnType<typeof routinesUpdate>>,
+export const getRoutinesUpdateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  updateRoutineDto: BodyType<UpdateRoutineDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesUpdate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getRoutinesUpdateQueryKey(id, updateRoutineDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof routinesUpdate>>> = ({
-    signal,
-  }) => routinesUpdate(id, updateRoutineDto, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof routinesUpdate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    RoutinesUpdateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof routinesUpdate>>,
+  TError,
+  RoutinesUpdateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getRoutinesUpdateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof routinesUpdate>>,
+    RoutinesUpdateMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return routinesUpdate(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type RoutinesUpdateQueryResult = NonNullable<
+export type RoutinesUpdateMutationResult = NonNullable<
   Awaited<ReturnType<typeof routinesUpdate>>
 >;
-export type RoutinesUpdateQueryError = ErrorType<unknown>;
+export type RoutinesUpdateMutationBody = BodyType<UpdateRoutineDto>;
+export type RoutinesUpdateMutationError = ErrorType<unknown>;
+export type RoutinesUpdateMutationVariables = {
+  id: string;
+  data: BodyType<UpdateRoutineDto>;
+};
 
-export function useRoutinesUpdate<
-  TData = Awaited<ReturnType<typeof routinesUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateRoutineDto: BodyType<UpdateRoutineDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesUpdate>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof routinesUpdate>>,
-          TError,
-          Awaited<ReturnType<typeof routinesUpdate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoutinesUpdate<
-  TData = Awaited<ReturnType<typeof routinesUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateRoutineDto: BodyType<UpdateRoutineDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesUpdate>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof routinesUpdate>>,
-          TError,
-          Awaited<ReturnType<typeof routinesUpdate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoutinesUpdate<
-  TData = Awaited<ReturnType<typeof routinesUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateRoutineDto: BodyType<UpdateRoutineDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesUpdate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
 /**
  * @summary Upcoming activities nobody started or edited are generated again.
  */
-
-export function useRoutinesUpdate<
-  TData = Awaited<ReturnType<typeof routinesUpdate>>,
+export const useRoutinesUpdate = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  updateRoutineDto: BodyType<UpdateRoutineDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesUpdate>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof routinesUpdate>>,
+      TError,
+      RoutinesUpdateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getRoutinesUpdateQueryOptions(
-    id,
-    updateRoutineDto,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+): UseMutationResult<
+  Awaited<ReturnType<typeof routinesUpdate>>,
+  TError,
+  RoutinesUpdateMutationVariables,
+  TContext
+> => {
+  return useMutation(getRoutinesUpdateMutationOptions(options), queryClient);
+};
 /**
  * @summary Removes the upcoming activities nobody started or edited; the rest stays as history.
  */
@@ -696,137 +575,78 @@ export const routinesRemove = (
   );
 };
 
-export const getRoutinesRemoveQueryKey = (id: string) => {
-  return ['DELETE', `/api/v1/routines/${id}`] as const;
-};
+export const getRoutinesRemoveMutationKey = () => ['routinesRemove'] as const;
 
-export const getRoutinesRemoveQueryOptions = <
-  TData = Awaited<ReturnType<typeof routinesRemove>>,
+export const getRoutinesRemoveMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesRemove>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getRoutinesRemoveQueryKey(id);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof routinesRemove>>> = ({
-    signal,
-  }) => routinesRemove(id, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof routinesRemove>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    RoutinesRemoveMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof routinesRemove>>,
+  TError,
+  RoutinesRemoveMutationVariables,
+  TContext
+> => {
+  const mutationKey = getRoutinesRemoveMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof routinesRemove>>,
+    RoutinesRemoveMutationVariables
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return routinesRemove(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type RoutinesRemoveQueryResult = NonNullable<
+export type RoutinesRemoveMutationResult = NonNullable<
   Awaited<ReturnType<typeof routinesRemove>>
 >;
-export type RoutinesRemoveQueryError = ErrorType<unknown>;
 
-export function useRoutinesRemove<
-  TData = Awaited<ReturnType<typeof routinesRemove>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesRemove>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof routinesRemove>>,
-          TError,
-          Awaited<ReturnType<typeof routinesRemove>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoutinesRemove<
-  TData = Awaited<ReturnType<typeof routinesRemove>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesRemove>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof routinesRemove>>,
-          TError,
-          Awaited<ReturnType<typeof routinesRemove>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoutinesRemove<
-  TData = Awaited<ReturnType<typeof routinesRemove>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesRemove>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+export type RoutinesRemoveMutationError = ErrorType<unknown>;
+export type RoutinesRemoveMutationVariables = { id: string };
+
 /**
  * @summary Removes the upcoming activities nobody started or edited; the rest stays as history.
  */
-
-export function useRoutinesRemove<
-  TData = Awaited<ReturnType<typeof routinesRemove>>,
+export const useRoutinesRemove = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesRemove>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof routinesRemove>>,
+      TError,
+      RoutinesRemoveMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getRoutinesRemoveQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+): UseMutationResult<
+  Awaited<ReturnType<typeof routinesRemove>>,
+  TError,
+  RoutinesRemoveMutationVariables,
+  TContext
+> => {
+  return useMutation(getRoutinesRemoveMutationOptions(options), queryClient);
+};
 /**
  * @summary Pauses or resumes; pausing removes the upcoming activities nobody started or edited.
  */
@@ -841,133 +661,75 @@ export const routinesToggle = (
   );
 };
 
-export const getRoutinesToggleQueryKey = (id: string) => {
-  return ['PATCH', `/api/v1/routines/${id}/toggle`] as const;
-};
+export const getRoutinesToggleMutationKey = () => ['routinesToggle'] as const;
 
-export const getRoutinesToggleQueryOptions = <
-  TData = Awaited<ReturnType<typeof routinesToggle>>,
+export const getRoutinesToggleMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesToggle>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getRoutinesToggleQueryKey(id);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof routinesToggle>>> = ({
-    signal,
-  }) => routinesToggle(id, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof routinesToggle>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    RoutinesToggleMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof routinesToggle>>,
+  TError,
+  RoutinesToggleMutationVariables,
+  TContext
+> => {
+  const mutationKey = getRoutinesToggleMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof routinesToggle>>,
+    RoutinesToggleMutationVariables
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return routinesToggle(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type RoutinesToggleQueryResult = NonNullable<
+export type RoutinesToggleMutationResult = NonNullable<
   Awaited<ReturnType<typeof routinesToggle>>
 >;
-export type RoutinesToggleQueryError = ErrorType<unknown>;
 
-export function useRoutinesToggle<
-  TData = Awaited<ReturnType<typeof routinesToggle>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesToggle>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof routinesToggle>>,
-          TError,
-          Awaited<ReturnType<typeof routinesToggle>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoutinesToggle<
-  TData = Awaited<ReturnType<typeof routinesToggle>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesToggle>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof routinesToggle>>,
-          TError,
-          Awaited<ReturnType<typeof routinesToggle>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoutinesToggle<
-  TData = Awaited<ReturnType<typeof routinesToggle>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesToggle>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+export type RoutinesToggleMutationError = ErrorType<unknown>;
+export type RoutinesToggleMutationVariables = { id: string };
+
 /**
  * @summary Pauses or resumes; pausing removes the upcoming activities nobody started or edited.
  */
-
-export function useRoutinesToggle<
-  TData = Awaited<ReturnType<typeof routinesToggle>>,
+export const useRoutinesToggle = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof routinesToggle>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof routinesToggle>>,
+      TError,
+      RoutinesToggleMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getRoutinesToggleQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
+): UseMutationResult<
+  Awaited<ReturnType<typeof routinesToggle>>,
+  TError,
+  RoutinesToggleMutationVariables,
+  TContext
+> => {
+  return useMutation(getRoutinesToggleMutationOptions(options), queryClient);
+};

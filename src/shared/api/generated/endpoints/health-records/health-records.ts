@@ -5,15 +5,18 @@
  * API do Care Senior — app mobile e web app administrativo
  * OpenAPI spec version: 1.0
  */
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
@@ -222,153 +225,78 @@ export const healthRecordsCreate = (
   );
 };
 
-export const getHealthRecordsCreateQueryKey = (
-  createHealthRecordDto?: BodyType<CreateHealthRecordDto>,
-) => {
-  return ['POST', `/api/v1/health-records`, createHealthRecordDto] as const;
-};
+export const getHealthRecordsCreateMutationKey = () =>
+  ['healthRecordsCreate'] as const;
 
-export const getHealthRecordsCreateQueryOptions = <
-  TData = Awaited<ReturnType<typeof healthRecordsCreate>>,
+export const getHealthRecordsCreateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  createHealthRecordDto: BodyType<CreateHealthRecordDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof healthRecordsCreate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getHealthRecordsCreateQueryKey(createHealthRecordDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof healthRecordsCreate>>
-  > = ({ signal }) =>
-    healthRecordsCreate(createHealthRecordDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof healthRecordsCreate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    HealthRecordsCreateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof healthRecordsCreate>>,
+  TError,
+  HealthRecordsCreateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getHealthRecordsCreateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof healthRecordsCreate>>,
+    HealthRecordsCreateMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return healthRecordsCreate(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type HealthRecordsCreateQueryResult = NonNullable<
+export type HealthRecordsCreateMutationResult = NonNullable<
   Awaited<ReturnType<typeof healthRecordsCreate>>
 >;
-export type HealthRecordsCreateQueryError = ErrorType<unknown>;
+export type HealthRecordsCreateMutationBody = BodyType<CreateHealthRecordDto>;
+export type HealthRecordsCreateMutationError = ErrorType<unknown>;
+export type HealthRecordsCreateMutationVariables = {
+  data: BodyType<CreateHealthRecordDto>;
+};
 
-export function useHealthRecordsCreate<
-  TData = Awaited<ReturnType<typeof healthRecordsCreate>>,
+export const useHealthRecordsCreate = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  createHealthRecordDto: BodyType<CreateHealthRecordDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof healthRecordsCreate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof healthRecordsCreate>>,
-          TError,
-          Awaited<ReturnType<typeof healthRecordsCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useHealthRecordsCreate<
-  TData = Awaited<ReturnType<typeof healthRecordsCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createHealthRecordDto: BodyType<CreateHealthRecordDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof healthRecordsCreate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof healthRecordsCreate>>,
-          TError,
-          Awaited<ReturnType<typeof healthRecordsCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useHealthRecordsCreate<
-  TData = Awaited<ReturnType<typeof healthRecordsCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createHealthRecordDto: BodyType<CreateHealthRecordDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof healthRecordsCreate>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof healthRecordsCreate>>,
+      TError,
+      HealthRecordsCreateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useHealthRecordsCreate<
-  TData = Awaited<ReturnType<typeof healthRecordsCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createHealthRecordDto: BodyType<CreateHealthRecordDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof healthRecordsCreate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getHealthRecordsCreateQueryOptions(
-    createHealthRecordDto,
-    options,
+): UseMutationResult<
+  Awaited<ReturnType<typeof healthRecordsCreate>>,
+  TError,
+  HealthRecordsCreateMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getHealthRecordsCreateMutationOptions(options),
+    queryClient,
   );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
+};

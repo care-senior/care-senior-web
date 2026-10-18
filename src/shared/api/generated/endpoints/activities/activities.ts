@@ -5,15 +5,18 @@
  * API do Care Senior — app mobile e web app administrativo
  * OpenAPI spec version: 1.0
  */
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
@@ -228,156 +231,78 @@ export const activitiesCreate = (
   );
 };
 
-export const getActivitiesCreateQueryKey = (
-  createActivityDto?: BodyType<CreateActivityDto>,
-) => {
-  return ['POST', `/api/v1/activities`, createActivityDto] as const;
-};
+export const getActivitiesCreateMutationKey = () =>
+  ['activitiesCreate'] as const;
 
-export const getActivitiesCreateQueryOptions = <
-  TData = Awaited<ReturnType<typeof activitiesCreate>>,
+export const getActivitiesCreateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  createActivityDto: BodyType<CreateActivityDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesCreate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getActivitiesCreateQueryKey(createActivityDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof activitiesCreate>>
-  > = ({ signal }) =>
-    activitiesCreate(createActivityDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof activitiesCreate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    ActivitiesCreateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof activitiesCreate>>,
+  TError,
+  ActivitiesCreateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getActivitiesCreateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof activitiesCreate>>,
+    ActivitiesCreateMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return activitiesCreate(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type ActivitiesCreateQueryResult = NonNullable<
+export type ActivitiesCreateMutationResult = NonNullable<
   Awaited<ReturnType<typeof activitiesCreate>>
 >;
-export type ActivitiesCreateQueryError = ErrorType<unknown>;
+export type ActivitiesCreateMutationBody = BodyType<CreateActivityDto>;
+export type ActivitiesCreateMutationError = ErrorType<unknown>;
+export type ActivitiesCreateMutationVariables = {
+  data: BodyType<CreateActivityDto>;
+};
 
-export function useActivitiesCreate<
-  TData = Awaited<ReturnType<typeof activitiesCreate>>,
+export const useActivitiesCreate = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  createActivityDto: BodyType<CreateActivityDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesCreate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof activitiesCreate>>,
-          TError,
-          Awaited<ReturnType<typeof activitiesCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useActivitiesCreate<
-  TData = Awaited<ReturnType<typeof activitiesCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createActivityDto: BodyType<CreateActivityDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesCreate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof activitiesCreate>>,
-          TError,
-          Awaited<ReturnType<typeof activitiesCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useActivitiesCreate<
-  TData = Awaited<ReturnType<typeof activitiesCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createActivityDto: BodyType<CreateActivityDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesCreate>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof activitiesCreate>>,
+      TError,
+      ActivitiesCreateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof activitiesCreate>>,
+  TError,
+  ActivitiesCreateMutationVariables,
+  TContext
+> => {
+  return useMutation(getActivitiesCreateMutationOptions(options), queryClient);
 };
-
-export function useActivitiesCreate<
-  TData = Awaited<ReturnType<typeof activitiesCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createActivityDto: BodyType<CreateActivityDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesCreate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getActivitiesCreateQueryOptions(
-    createActivityDto,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 export const activitiesFindOne = (
   id: string,
   options?: SecondParameter<typeof httpClient>,
@@ -558,172 +483,82 @@ export const activitiesUpdate = (
   );
 };
 
-export const getActivitiesUpdateQueryKey = (
-  id: string,
-  updateActivityDto?: BodyType<UpdateActivityDto>,
-) => {
-  return ['PATCH', `/api/v1/activities/${id}`, updateActivityDto] as const;
-};
+export const getActivitiesUpdateMutationKey = () =>
+  ['activitiesUpdate'] as const;
 
-export const getActivitiesUpdateQueryOptions = <
-  TData = Awaited<ReturnType<typeof activitiesUpdate>>,
+export const getActivitiesUpdateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  updateActivityDto: BodyType<UpdateActivityDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesUpdate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getActivitiesUpdateQueryKey(id, updateActivityDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof activitiesUpdate>>
-  > = ({ signal }) =>
-    activitiesUpdate(id, updateActivityDto, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof activitiesUpdate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    ActivitiesUpdateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof activitiesUpdate>>,
+  TError,
+  ActivitiesUpdateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getActivitiesUpdateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof activitiesUpdate>>,
+    ActivitiesUpdateMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return activitiesUpdate(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type ActivitiesUpdateQueryResult = NonNullable<
+export type ActivitiesUpdateMutationResult = NonNullable<
   Awaited<ReturnType<typeof activitiesUpdate>>
 >;
-export type ActivitiesUpdateQueryError = ErrorType<unknown>;
+export type ActivitiesUpdateMutationBody = BodyType<UpdateActivityDto>;
+export type ActivitiesUpdateMutationError = ErrorType<unknown>;
+export type ActivitiesUpdateMutationVariables = {
+  id: string;
+  data: BodyType<UpdateActivityDto>;
+};
 
-export function useActivitiesUpdate<
-  TData = Awaited<ReturnType<typeof activitiesUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateActivityDto: BodyType<UpdateActivityDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesUpdate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof activitiesUpdate>>,
-          TError,
-          Awaited<ReturnType<typeof activitiesUpdate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useActivitiesUpdate<
-  TData = Awaited<ReturnType<typeof activitiesUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateActivityDto: BodyType<UpdateActivityDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesUpdate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof activitiesUpdate>>,
-          TError,
-          Awaited<ReturnType<typeof activitiesUpdate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useActivitiesUpdate<
-  TData = Awaited<ReturnType<typeof activitiesUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateActivityDto: BodyType<UpdateActivityDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesUpdate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
 /**
  * @summary Only while no participant has started.
  */
-
-export function useActivitiesUpdate<
-  TData = Awaited<ReturnType<typeof activitiesUpdate>>,
+export const useActivitiesUpdate = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  updateActivityDto: BodyType<UpdateActivityDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesUpdate>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof activitiesUpdate>>,
+      TError,
+      ActivitiesUpdateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getActivitiesUpdateQueryOptions(
-    id,
-    updateActivityDto,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+): UseMutationResult<
+  Awaited<ReturnType<typeof activitiesUpdate>>,
+  TError,
+  ActivitiesUpdateMutationVariables,
+  TContext
+> => {
+  return useMutation(getActivitiesUpdateMutationOptions(options), queryClient);
+};
 /**
  * @summary Starts every participant not started yet.
  */
@@ -738,157 +573,82 @@ export const activitiesStartAll = (
   );
 };
 
-export const getActivitiesStartAllQueryKey = (id: string) => {
-  return ['POST', `/api/v1/activities/${id}/start-all`] as const;
-};
+export const getActivitiesStartAllMutationKey = () =>
+  ['activitiesStartAll'] as const;
 
-export const getActivitiesStartAllQueryOptions = <
-  TData = Awaited<ReturnType<typeof activitiesStartAll>>,
+export const getActivitiesStartAllMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesStartAll>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getActivitiesStartAllQueryKey(id);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof activitiesStartAll>>
-  > = ({ signal }) => activitiesStartAll(id, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof activitiesStartAll>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    ActivitiesStartAllMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof activitiesStartAll>>,
+  TError,
+  ActivitiesStartAllMutationVariables,
+  TContext
+> => {
+  const mutationKey = getActivitiesStartAllMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof activitiesStartAll>>,
+    ActivitiesStartAllMutationVariables
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return activitiesStartAll(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type ActivitiesStartAllQueryResult = NonNullable<
+export type ActivitiesStartAllMutationResult = NonNullable<
   Awaited<ReturnType<typeof activitiesStartAll>>
 >;
-export type ActivitiesStartAllQueryError = ErrorType<unknown>;
 
-export function useActivitiesStartAll<
-  TData = Awaited<ReturnType<typeof activitiesStartAll>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesStartAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof activitiesStartAll>>,
-          TError,
-          Awaited<ReturnType<typeof activitiesStartAll>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useActivitiesStartAll<
-  TData = Awaited<ReturnType<typeof activitiesStartAll>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesStartAll>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof activitiesStartAll>>,
-          TError,
-          Awaited<ReturnType<typeof activitiesStartAll>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useActivitiesStartAll<
-  TData = Awaited<ReturnType<typeof activitiesStartAll>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesStartAll>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+export type ActivitiesStartAllMutationError = ErrorType<unknown>;
+export type ActivitiesStartAllMutationVariables = { id: string };
+
 /**
  * @summary Starts every participant not started yet.
  */
-
-export function useActivitiesStartAll<
-  TData = Awaited<ReturnType<typeof activitiesStartAll>>,
+export const useActivitiesStartAll = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesStartAll>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof activitiesStartAll>>,
+      TError,
+      ActivitiesStartAllMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getActivitiesStartAllQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+): UseMutationResult<
+  Awaited<ReturnType<typeof activitiesStartAll>>,
+  TError,
+  ActivitiesStartAllMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getActivitiesStartAllMutationOptions(options),
+    queryClient,
+  );
+};
 export const activitiesComplete = (
   id: string,
   residentId: string,
@@ -908,190 +668,83 @@ export const activitiesComplete = (
   );
 };
 
-export const getActivitiesCompleteQueryKey = (
-  id: string,
-  residentId: string,
-  completeParticipantDto?: BodyType<CompleteParticipantDto>,
-) => {
-  return [
-    'POST',
-    `/api/v1/activities/${id}/participants/${residentId}/complete`,
-    completeParticipantDto,
-  ] as const;
-};
+export const getActivitiesCompleteMutationKey = () =>
+  ['activitiesComplete'] as const;
 
-export const getActivitiesCompleteQueryOptions = <
-  TData = Awaited<ReturnType<typeof activitiesComplete>>,
+export const getActivitiesCompleteMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  residentId: string,
-  completeParticipantDto: BodyType<CompleteParticipantDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesComplete>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getActivitiesCompleteQueryKey(id, residentId, completeParticipantDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof activitiesComplete>>
-  > = ({ signal }) =>
-    activitiesComplete(
-      id,
-      residentId,
-      completeParticipantDto,
-      requestOptions,
-      signal,
-    );
-
-  return {
-    queryKey,
-    queryFn,
-    enabled:
-      id !== null &&
-      id !== undefined &&
-      residentId !== null &&
-      residentId !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof activitiesComplete>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    ActivitiesCompleteMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof activitiesComplete>>,
+  TError,
+  ActivitiesCompleteMutationVariables,
+  TContext
+> => {
+  const mutationKey = getActivitiesCompleteMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof activitiesComplete>>,
+    ActivitiesCompleteMutationVariables
+  > = (props) => {
+    const { id, residentId, data } = props ?? {};
+
+    return activitiesComplete(id, residentId, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type ActivitiesCompleteQueryResult = NonNullable<
+export type ActivitiesCompleteMutationResult = NonNullable<
   Awaited<ReturnType<typeof activitiesComplete>>
 >;
-export type ActivitiesCompleteQueryError = ErrorType<unknown>;
+export type ActivitiesCompleteMutationBody = BodyType<CompleteParticipantDto>;
+export type ActivitiesCompleteMutationError = ErrorType<unknown>;
+export type ActivitiesCompleteMutationVariables = {
+  id: string;
+  residentId: string;
+  data: BodyType<CompleteParticipantDto>;
+};
 
-export function useActivitiesComplete<
-  TData = Awaited<ReturnType<typeof activitiesComplete>>,
+export const useActivitiesComplete = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  residentId: string,
-  completeParticipantDto: BodyType<CompleteParticipantDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesComplete>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof activitiesComplete>>,
-          TError,
-          Awaited<ReturnType<typeof activitiesComplete>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useActivitiesComplete<
-  TData = Awaited<ReturnType<typeof activitiesComplete>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  residentId: string,
-  completeParticipantDto: BodyType<CompleteParticipantDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesComplete>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof activitiesComplete>>,
-          TError,
-          Awaited<ReturnType<typeof activitiesComplete>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useActivitiesComplete<
-  TData = Awaited<ReturnType<typeof activitiesComplete>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  residentId: string,
-  completeParticipantDto: BodyType<CompleteParticipantDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesComplete>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof activitiesComplete>>,
+      TError,
+      ActivitiesCompleteMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useActivitiesComplete<
-  TData = Awaited<ReturnType<typeof activitiesComplete>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  residentId: string,
-  completeParticipantDto: BodyType<CompleteParticipantDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesComplete>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getActivitiesCompleteQueryOptions(
-    id,
-    residentId,
-    completeParticipantDto,
-    options,
+): UseMutationResult<
+  Awaited<ReturnType<typeof activitiesComplete>>,
+  TError,
+  ActivitiesCompleteMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getActivitiesCompleteMutationOptions(options),
+    queryClient,
   );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+};
 export const activitiesSkip = (
   id: string,
   residentId: string,
@@ -1111,164 +764,79 @@ export const activitiesSkip = (
   );
 };
 
-export const getActivitiesSkipQueryKey = (
-  id: string,
-  residentId: string,
-  skipParticipantDto?: BodyType<SkipParticipantDto>,
-) => {
-  return [
-    'POST',
-    `/api/v1/activities/${id}/participants/${residentId}/skip`,
-    skipParticipantDto,
-  ] as const;
-};
+export const getActivitiesSkipMutationKey = () => ['activitiesSkip'] as const;
 
-export const getActivitiesSkipQueryOptions = <
-  TData = Awaited<ReturnType<typeof activitiesSkip>>,
+export const getActivitiesSkipMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  residentId: string,
-  skipParticipantDto: BodyType<SkipParticipantDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof activitiesSkip>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getActivitiesSkipQueryKey(id, residentId, skipParticipantDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof activitiesSkip>>> = ({
-    signal,
-  }) =>
-    activitiesSkip(id, residentId, skipParticipantDto, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled:
-      id !== null &&
-      id !== undefined &&
-      residentId !== null &&
-      residentId !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof activitiesSkip>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    ActivitiesSkipMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof activitiesSkip>>,
+  TError,
+  ActivitiesSkipMutationVariables,
+  TContext
+> => {
+  const mutationKey = getActivitiesSkipMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof activitiesSkip>>,
+    ActivitiesSkipMutationVariables
+  > = (props) => {
+    const { id, residentId, data } = props ?? {};
+
+    return activitiesSkip(id, residentId, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type ActivitiesSkipQueryResult = NonNullable<
+export type ActivitiesSkipMutationResult = NonNullable<
   Awaited<ReturnType<typeof activitiesSkip>>
 >;
-export type ActivitiesSkipQueryError = ErrorType<unknown>;
+export type ActivitiesSkipMutationBody = BodyType<SkipParticipantDto>;
+export type ActivitiesSkipMutationError = ErrorType<unknown>;
+export type ActivitiesSkipMutationVariables = {
+  id: string;
+  residentId: string;
+  data: BodyType<SkipParticipantDto>;
+};
 
-export function useActivitiesSkip<
-  TData = Awaited<ReturnType<typeof activitiesSkip>>,
+export const useActivitiesSkip = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  residentId: string,
-  skipParticipantDto: BodyType<SkipParticipantDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof activitiesSkip>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof activitiesSkip>>,
-          TError,
-          Awaited<ReturnType<typeof activitiesSkip>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useActivitiesSkip<
-  TData = Awaited<ReturnType<typeof activitiesSkip>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  residentId: string,
-  skipParticipantDto: BodyType<SkipParticipantDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof activitiesSkip>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof activitiesSkip>>,
-          TError,
-          Awaited<ReturnType<typeof activitiesSkip>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useActivitiesSkip<
-  TData = Awaited<ReturnType<typeof activitiesSkip>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  residentId: string,
-  skipParticipantDto: BodyType<SkipParticipantDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof activitiesSkip>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof activitiesSkip>>,
+      TError,
+      ActivitiesSkipMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof activitiesSkip>>,
+  TError,
+  ActivitiesSkipMutationVariables,
+  TContext
+> => {
+  return useMutation(getActivitiesSkipMutationOptions(options), queryClient);
 };
-
-export function useActivitiesSkip<
-  TData = Awaited<ReturnType<typeof activitiesSkip>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  residentId: string,
-  skipParticipantDto: BodyType<SkipParticipantDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof activitiesSkip>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getActivitiesSkipQueryOptions(
-    id,
-    residentId,
-    skipParticipantDto,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 /**
  * @summary All or nothing: one resident that can't be completed fails the batch.
  */
@@ -1290,181 +858,86 @@ export const activitiesCompleteBatch = (
   );
 };
 
-export const getActivitiesCompleteBatchQueryKey = (
-  id: string,
-  completeParticipantsDto?: BodyType<CompleteParticipantsDto>,
-) => {
-  return [
-    'POST',
-    `/api/v1/activities/${id}/complete-batch`,
-    completeParticipantsDto,
-  ] as const;
-};
+export const getActivitiesCompleteBatchMutationKey = () =>
+  ['activitiesCompleteBatch'] as const;
 
-export const getActivitiesCompleteBatchQueryOptions = <
-  TData = Awaited<ReturnType<typeof activitiesCompleteBatch>>,
+export const getActivitiesCompleteBatchMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  completeParticipantsDto: BodyType<CompleteParticipantsDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesCompleteBatch>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getActivitiesCompleteBatchQueryKey(id, completeParticipantsDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof activitiesCompleteBatch>>
-  > = ({ signal }) =>
-    activitiesCompleteBatch(
-      id,
-      completeParticipantsDto,
-      requestOptions,
-      signal,
-    );
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof activitiesCompleteBatch>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    ActivitiesCompleteBatchMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof activitiesCompleteBatch>>,
+  TError,
+  ActivitiesCompleteBatchMutationVariables,
+  TContext
+> => {
+  const mutationKey = getActivitiesCompleteBatchMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof activitiesCompleteBatch>>,
+    ActivitiesCompleteBatchMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return activitiesCompleteBatch(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type ActivitiesCompleteBatchQueryResult = NonNullable<
+export type ActivitiesCompleteBatchMutationResult = NonNullable<
   Awaited<ReturnType<typeof activitiesCompleteBatch>>
 >;
-export type ActivitiesCompleteBatchQueryError = ErrorType<unknown>;
+export type ActivitiesCompleteBatchMutationBody =
+  BodyType<CompleteParticipantsDto>;
+export type ActivitiesCompleteBatchMutationError = ErrorType<unknown>;
+export type ActivitiesCompleteBatchMutationVariables = {
+  id: string;
+  data: BodyType<CompleteParticipantsDto>;
+};
 
-export function useActivitiesCompleteBatch<
-  TData = Awaited<ReturnType<typeof activitiesCompleteBatch>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  completeParticipantsDto: BodyType<CompleteParticipantsDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesCompleteBatch>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof activitiesCompleteBatch>>,
-          TError,
-          Awaited<ReturnType<typeof activitiesCompleteBatch>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useActivitiesCompleteBatch<
-  TData = Awaited<ReturnType<typeof activitiesCompleteBatch>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  completeParticipantsDto: BodyType<CompleteParticipantsDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesCompleteBatch>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof activitiesCompleteBatch>>,
-          TError,
-          Awaited<ReturnType<typeof activitiesCompleteBatch>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useActivitiesCompleteBatch<
-  TData = Awaited<ReturnType<typeof activitiesCompleteBatch>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  completeParticipantsDto: BodyType<CompleteParticipantsDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesCompleteBatch>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
 /**
  * @summary All or nothing: one resident that can't be completed fails the batch.
  */
-
-export function useActivitiesCompleteBatch<
-  TData = Awaited<ReturnType<typeof activitiesCompleteBatch>>,
+export const useActivitiesCompleteBatch = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  completeParticipantsDto: BodyType<CompleteParticipantsDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesCompleteBatch>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof activitiesCompleteBatch>>,
+      TError,
+      ActivitiesCompleteBatchMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getActivitiesCompleteBatchQueryOptions(
-    id,
-    completeParticipantsDto,
-    options,
+): UseMutationResult<
+  Awaited<ReturnType<typeof activitiesCompleteBatch>>,
+  TError,
+  ActivitiesCompleteBatchMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getActivitiesCompleteBatchMutationOptions(options),
+    queryClient,
   );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+};
 /**
  * @summary All or nothing: one resident that can't be skipped fails the batch.
  */
@@ -1486,176 +959,85 @@ export const activitiesSkipBatch = (
   );
 };
 
-export const getActivitiesSkipBatchQueryKey = (
-  id: string,
-  skipParticipantsDto?: BodyType<SkipParticipantsDto>,
-) => {
-  return [
-    'POST',
-    `/api/v1/activities/${id}/skip-batch`,
-    skipParticipantsDto,
-  ] as const;
-};
+export const getActivitiesSkipBatchMutationKey = () =>
+  ['activitiesSkipBatch'] as const;
 
-export const getActivitiesSkipBatchQueryOptions = <
-  TData = Awaited<ReturnType<typeof activitiesSkipBatch>>,
+export const getActivitiesSkipBatchMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  skipParticipantsDto: BodyType<SkipParticipantsDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesSkipBatch>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getActivitiesSkipBatchQueryKey(id, skipParticipantsDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof activitiesSkipBatch>>
-  > = ({ signal }) =>
-    activitiesSkipBatch(id, skipParticipantsDto, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof activitiesSkipBatch>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    ActivitiesSkipBatchMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof activitiesSkipBatch>>,
+  TError,
+  ActivitiesSkipBatchMutationVariables,
+  TContext
+> => {
+  const mutationKey = getActivitiesSkipBatchMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof activitiesSkipBatch>>,
+    ActivitiesSkipBatchMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return activitiesSkipBatch(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type ActivitiesSkipBatchQueryResult = NonNullable<
+export type ActivitiesSkipBatchMutationResult = NonNullable<
   Awaited<ReturnType<typeof activitiesSkipBatch>>
 >;
-export type ActivitiesSkipBatchQueryError = ErrorType<unknown>;
+export type ActivitiesSkipBatchMutationBody = BodyType<SkipParticipantsDto>;
+export type ActivitiesSkipBatchMutationError = ErrorType<unknown>;
+export type ActivitiesSkipBatchMutationVariables = {
+  id: string;
+  data: BodyType<SkipParticipantsDto>;
+};
 
-export function useActivitiesSkipBatch<
-  TData = Awaited<ReturnType<typeof activitiesSkipBatch>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  skipParticipantsDto: BodyType<SkipParticipantsDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesSkipBatch>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof activitiesSkipBatch>>,
-          TError,
-          Awaited<ReturnType<typeof activitiesSkipBatch>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useActivitiesSkipBatch<
-  TData = Awaited<ReturnType<typeof activitiesSkipBatch>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  skipParticipantsDto: BodyType<SkipParticipantsDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesSkipBatch>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof activitiesSkipBatch>>,
-          TError,
-          Awaited<ReturnType<typeof activitiesSkipBatch>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useActivitiesSkipBatch<
-  TData = Awaited<ReturnType<typeof activitiesSkipBatch>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  skipParticipantsDto: BodyType<SkipParticipantsDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesSkipBatch>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
 /**
  * @summary All or nothing: one resident that can't be skipped fails the batch.
  */
-
-export function useActivitiesSkipBatch<
-  TData = Awaited<ReturnType<typeof activitiesSkipBatch>>,
+export const useActivitiesSkipBatch = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  skipParticipantsDto: BodyType<SkipParticipantsDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesSkipBatch>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof activitiesSkipBatch>>,
+      TError,
+      ActivitiesSkipBatchMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getActivitiesSkipBatchQueryOptions(
-    id,
-    skipParticipantsDto,
-    options,
+): UseMutationResult<
+  Awaited<ReturnType<typeof activitiesSkipBatch>>,
+  TError,
+  ActivitiesSkipBatchMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getActivitiesSkipBatchMutationOptions(options),
+    queryClient,
   );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+};
 /**
  * @summary Cancels it for every participant still pending or in progress; the ones
 already completed or skipped keep their outcome.
@@ -1678,173 +1060,80 @@ export const activitiesCancel = (
   );
 };
 
-export const getActivitiesCancelQueryKey = (
-  id: string,
-  cancelActivityDto?: BodyType<CancelActivityDto>,
-) => {
-  return [
-    'POST',
-    `/api/v1/activities/${id}/cancel`,
-    cancelActivityDto,
-  ] as const;
-};
+export const getActivitiesCancelMutationKey = () =>
+  ['activitiesCancel'] as const;
 
-export const getActivitiesCancelQueryOptions = <
-  TData = Awaited<ReturnType<typeof activitiesCancel>>,
+export const getActivitiesCancelMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  cancelActivityDto: BodyType<CancelActivityDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesCancel>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getActivitiesCancelQueryKey(id, cancelActivityDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof activitiesCancel>>
-  > = ({ signal }) =>
-    activitiesCancel(id, cancelActivityDto, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof activitiesCancel>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    ActivitiesCancelMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof activitiesCancel>>,
+  TError,
+  ActivitiesCancelMutationVariables,
+  TContext
+> => {
+  const mutationKey = getActivitiesCancelMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof activitiesCancel>>,
+    ActivitiesCancelMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return activitiesCancel(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type ActivitiesCancelQueryResult = NonNullable<
+export type ActivitiesCancelMutationResult = NonNullable<
   Awaited<ReturnType<typeof activitiesCancel>>
 >;
-export type ActivitiesCancelQueryError = ErrorType<unknown>;
+export type ActivitiesCancelMutationBody = BodyType<CancelActivityDto>;
+export type ActivitiesCancelMutationError = ErrorType<unknown>;
+export type ActivitiesCancelMutationVariables = {
+  id: string;
+  data: BodyType<CancelActivityDto>;
+};
 
-export function useActivitiesCancel<
-  TData = Awaited<ReturnType<typeof activitiesCancel>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  cancelActivityDto: BodyType<CancelActivityDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesCancel>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof activitiesCancel>>,
-          TError,
-          Awaited<ReturnType<typeof activitiesCancel>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useActivitiesCancel<
-  TData = Awaited<ReturnType<typeof activitiesCancel>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  cancelActivityDto: BodyType<CancelActivityDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesCancel>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof activitiesCancel>>,
-          TError,
-          Awaited<ReturnType<typeof activitiesCancel>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useActivitiesCancel<
-  TData = Awaited<ReturnType<typeof activitiesCancel>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  cancelActivityDto: BodyType<CancelActivityDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesCancel>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
 /**
  * @summary Cancels it for every participant still pending or in progress; the ones
 already completed or skipped keep their outcome.
  */
-
-export function useActivitiesCancel<
-  TData = Awaited<ReturnType<typeof activitiesCancel>>,
+export const useActivitiesCancel = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  cancelActivityDto: BodyType<CancelActivityDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof activitiesCancel>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof activitiesCancel>>,
+      TError,
+      ActivitiesCancelMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getActivitiesCancelQueryOptions(
-    id,
-    cancelActivityDto,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
+): UseMutationResult<
+  Awaited<ReturnType<typeof activitiesCancel>>,
+  TError,
+  ActivitiesCancelMutationVariables,
+  TContext
+> => {
+  return useMutation(getActivitiesCancelMutationOptions(options), queryClient);
+};

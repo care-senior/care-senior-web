@@ -5,15 +5,18 @@
  * API do Care Senior — app mobile e web app administrativo
  * OpenAPI spec version: 1.0
  */
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
@@ -72,158 +75,80 @@ export const guardiansCreate = (
   );
 };
 
-export const getGuardiansCreateQueryKey = (
-  createGuardianDto?: BodyType<CreateGuardianDto>,
-) => {
-  return ['POST', `/api/v1/guardians`, createGuardianDto] as const;
-};
+export const getGuardiansCreateMutationKey = () => ['guardiansCreate'] as const;
 
-export const getGuardiansCreateQueryOptions = <
-  TData = Awaited<ReturnType<typeof guardiansCreate>>,
+export const getGuardiansCreateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  createGuardianDto: BodyType<CreateGuardianDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansCreate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getGuardiansCreateQueryKey(createGuardianDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof guardiansCreate>>> = ({
-    signal,
-  }) => guardiansCreate(createGuardianDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof guardiansCreate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    GuardiansCreateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof guardiansCreate>>,
+  TError,
+  GuardiansCreateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getGuardiansCreateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof guardiansCreate>>,
+    GuardiansCreateMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return guardiansCreate(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type GuardiansCreateQueryResult = NonNullable<
+export type GuardiansCreateMutationResult = NonNullable<
   Awaited<ReturnType<typeof guardiansCreate>>
 >;
-export type GuardiansCreateQueryError = ErrorType<unknown>;
+export type GuardiansCreateMutationBody = BodyType<CreateGuardianDto>;
+export type GuardiansCreateMutationError = ErrorType<unknown>;
+export type GuardiansCreateMutationVariables = {
+  data: BodyType<CreateGuardianDto>;
+};
 
-export function useGuardiansCreate<
-  TData = Awaited<ReturnType<typeof guardiansCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createGuardianDto: BodyType<CreateGuardianDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansCreate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof guardiansCreate>>,
-          TError,
-          Awaited<ReturnType<typeof guardiansCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGuardiansCreate<
-  TData = Awaited<ReturnType<typeof guardiansCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createGuardianDto: BodyType<CreateGuardianDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansCreate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof guardiansCreate>>,
-          TError,
-          Awaited<ReturnType<typeof guardiansCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGuardiansCreate<
-  TData = Awaited<ReturnType<typeof guardiansCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createGuardianDto: BodyType<CreateGuardianDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansCreate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
 /**
  * @summary Walk-in signup by the clinic staff: guardian + resident in a room.
  */
-
-export function useGuardiansCreate<
-  TData = Awaited<ReturnType<typeof guardiansCreate>>,
+export const useGuardiansCreate = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  createGuardianDto: BodyType<CreateGuardianDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansCreate>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof guardiansCreate>>,
+      TError,
+      GuardiansCreateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGuardiansCreateQueryOptions(
-    createGuardianDto,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+): UseMutationResult<
+  Awaited<ReturnType<typeof guardiansCreate>>,
+  TError,
+  GuardiansCreateMutationVariables,
+  TContext
+> => {
+  return useMutation(getGuardiansCreateMutationOptions(options), queryClient);
+};
 export const guardiansFindPendingLinkRequests = (
   params?: GuardiansFindPendingLinkRequestsParams,
   options?: SecondParameter<typeof httpClient>,
@@ -411,161 +336,79 @@ export const guardiansUpdateMe = (
   );
 };
 
-export const getGuardiansUpdateMeQueryKey = (
-  updateOwnGuardianProfileDto?: BodyType<UpdateOwnGuardianProfileDto>,
-) => {
-  return [
-    'PATCH',
-    `/api/v1/guardians/me`,
-    updateOwnGuardianProfileDto,
-  ] as const;
-};
+export const getGuardiansUpdateMeMutationKey = () =>
+  ['guardiansUpdateMe'] as const;
 
-export const getGuardiansUpdateMeQueryOptions = <
-  TData = Awaited<ReturnType<typeof guardiansUpdateMe>>,
+export const getGuardiansUpdateMeMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  updateOwnGuardianProfileDto: BodyType<UpdateOwnGuardianProfileDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansUpdateMe>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getGuardiansUpdateMeQueryKey(updateOwnGuardianProfileDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof guardiansUpdateMe>>
-  > = ({ signal }) =>
-    guardiansUpdateMe(updateOwnGuardianProfileDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof guardiansUpdateMe>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    GuardiansUpdateMeMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof guardiansUpdateMe>>,
+  TError,
+  GuardiansUpdateMeMutationVariables,
+  TContext
+> => {
+  const mutationKey = getGuardiansUpdateMeMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof guardiansUpdateMe>>,
+    GuardiansUpdateMeMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return guardiansUpdateMe(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type GuardiansUpdateMeQueryResult = NonNullable<
+export type GuardiansUpdateMeMutationResult = NonNullable<
   Awaited<ReturnType<typeof guardiansUpdateMe>>
 >;
-export type GuardiansUpdateMeQueryError = ErrorType<unknown>;
+export type GuardiansUpdateMeMutationBody =
+  BodyType<UpdateOwnGuardianProfileDto>;
+export type GuardiansUpdateMeMutationError = ErrorType<unknown>;
+export type GuardiansUpdateMeMutationVariables = {
+  data: BodyType<UpdateOwnGuardianProfileDto>;
+};
 
-export function useGuardiansUpdateMe<
-  TData = Awaited<ReturnType<typeof guardiansUpdateMe>>,
+export const useGuardiansUpdateMe = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  updateOwnGuardianProfileDto: BodyType<UpdateOwnGuardianProfileDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansUpdateMe>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof guardiansUpdateMe>>,
-          TError,
-          Awaited<ReturnType<typeof guardiansUpdateMe>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGuardiansUpdateMe<
-  TData = Awaited<ReturnType<typeof guardiansUpdateMe>>,
-  TError = ErrorType<unknown>,
->(
-  updateOwnGuardianProfileDto: BodyType<UpdateOwnGuardianProfileDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansUpdateMe>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof guardiansUpdateMe>>,
-          TError,
-          Awaited<ReturnType<typeof guardiansUpdateMe>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGuardiansUpdateMe<
-  TData = Awaited<ReturnType<typeof guardiansUpdateMe>>,
-  TError = ErrorType<unknown>,
->(
-  updateOwnGuardianProfileDto: BodyType<UpdateOwnGuardianProfileDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansUpdateMe>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof guardiansUpdateMe>>,
+      TError,
+      GuardiansUpdateMeMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof guardiansUpdateMe>>,
+  TError,
+  GuardiansUpdateMeMutationVariables,
+  TContext
+> => {
+  return useMutation(getGuardiansUpdateMeMutationOptions(options), queryClient);
 };
-
-export function useGuardiansUpdateMe<
-  TData = Awaited<ReturnType<typeof guardiansUpdateMe>>,
-  TError = ErrorType<unknown>,
->(
-  updateOwnGuardianProfileDto: BodyType<UpdateOwnGuardianProfileDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansUpdateMe>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGuardiansUpdateMeQueryOptions(
-    updateOwnGuardianProfileDto,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 export const guardiansFindOne = (
   id: string,
   options?: SecondParameter<typeof httpClient>,
@@ -743,167 +586,78 @@ export const guardiansUpdate = (
   );
 };
 
-export const getGuardiansUpdateQueryKey = (
-  id: string,
-  updateGuardianDto?: BodyType<UpdateGuardianDto>,
-) => {
-  return ['PATCH', `/api/v1/guardians/${id}`, updateGuardianDto] as const;
-};
+export const getGuardiansUpdateMutationKey = () => ['guardiansUpdate'] as const;
 
-export const getGuardiansUpdateQueryOptions = <
-  TData = Awaited<ReturnType<typeof guardiansUpdate>>,
+export const getGuardiansUpdateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  updateGuardianDto: BodyType<UpdateGuardianDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansUpdate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getGuardiansUpdateQueryKey(id, updateGuardianDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof guardiansUpdate>>> = ({
-    signal,
-  }) => guardiansUpdate(id, updateGuardianDto, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof guardiansUpdate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    GuardiansUpdateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof guardiansUpdate>>,
+  TError,
+  GuardiansUpdateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getGuardiansUpdateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof guardiansUpdate>>,
+    GuardiansUpdateMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return guardiansUpdate(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type GuardiansUpdateQueryResult = NonNullable<
+export type GuardiansUpdateMutationResult = NonNullable<
   Awaited<ReturnType<typeof guardiansUpdate>>
 >;
-export type GuardiansUpdateQueryError = ErrorType<unknown>;
+export type GuardiansUpdateMutationBody = BodyType<UpdateGuardianDto>;
+export type GuardiansUpdateMutationError = ErrorType<unknown>;
+export type GuardiansUpdateMutationVariables = {
+  id: string;
+  data: BodyType<UpdateGuardianDto>;
+};
 
-export function useGuardiansUpdate<
-  TData = Awaited<ReturnType<typeof guardiansUpdate>>,
+export const useGuardiansUpdate = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  updateGuardianDto: BodyType<UpdateGuardianDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansUpdate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof guardiansUpdate>>,
-          TError,
-          Awaited<ReturnType<typeof guardiansUpdate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGuardiansUpdate<
-  TData = Awaited<ReturnType<typeof guardiansUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateGuardianDto: BodyType<UpdateGuardianDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansUpdate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof guardiansUpdate>>,
-          TError,
-          Awaited<ReturnType<typeof guardiansUpdate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGuardiansUpdate<
-  TData = Awaited<ReturnType<typeof guardiansUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateGuardianDto: BodyType<UpdateGuardianDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansUpdate>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof guardiansUpdate>>,
+      TError,
+      GuardiansUpdateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof guardiansUpdate>>,
+  TError,
+  GuardiansUpdateMutationVariables,
+  TContext
+> => {
+  return useMutation(getGuardiansUpdateMutationOptions(options), queryClient);
 };
-
-export function useGuardiansUpdate<
-  TData = Awaited<ReturnType<typeof guardiansUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateGuardianDto: BodyType<UpdateGuardianDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansUpdate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGuardiansUpdateQueryOptions(
-    id,
-    updateGuardianDto,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 export const guardiansContactClinic = (
   id: string,
   params: GuardiansContactClinicParams,
@@ -921,168 +675,79 @@ export const guardiansContactClinic = (
   );
 };
 
-export const getGuardiansContactClinicQueryKey = (
-  id: string,
-  params?: GuardiansContactClinicParams,
-) => {
-  return [
-    'POST',
-    `/api/v1/guardians/${id}/contact-clinic`,
-    ...(params ? [params] : []),
-  ] as const;
-};
+export const getGuardiansContactClinicMutationKey = () =>
+  ['guardiansContactClinic'] as const;
 
-export const getGuardiansContactClinicQueryOptions = <
-  TData = Awaited<ReturnType<typeof guardiansContactClinic>>,
+export const getGuardiansContactClinicMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  params: GuardiansContactClinicParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansContactClinic>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getGuardiansContactClinicQueryKey(id, params);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof guardiansContactClinic>>
-  > = ({ signal }) =>
-    guardiansContactClinic(id, params, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof guardiansContactClinic>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    GuardiansContactClinicMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof guardiansContactClinic>>,
+  TError,
+  GuardiansContactClinicMutationVariables,
+  TContext
+> => {
+  const mutationKey = getGuardiansContactClinicMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof guardiansContactClinic>>,
+    GuardiansContactClinicMutationVariables
+  > = (props) => {
+    const { id, params } = props ?? {};
+
+    return guardiansContactClinic(id, params, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type GuardiansContactClinicQueryResult = NonNullable<
+export type GuardiansContactClinicMutationResult = NonNullable<
   Awaited<ReturnType<typeof guardiansContactClinic>>
 >;
-export type GuardiansContactClinicQueryError = ErrorType<unknown>;
 
-export function useGuardiansContactClinic<
-  TData = Awaited<ReturnType<typeof guardiansContactClinic>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  params: GuardiansContactClinicParams,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansContactClinic>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof guardiansContactClinic>>,
-          TError,
-          Awaited<ReturnType<typeof guardiansContactClinic>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+export type GuardiansContactClinicMutationError = ErrorType<unknown>;
+export type GuardiansContactClinicMutationVariables = {
+  id: string;
+  params: GuardiansContactClinicParams;
 };
-export function useGuardiansContactClinic<
-  TData = Awaited<ReturnType<typeof guardiansContactClinic>>,
+
+export const useGuardiansContactClinic = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  params: GuardiansContactClinicParams,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansContactClinic>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof guardiansContactClinic>>,
-          TError,
-          Awaited<ReturnType<typeof guardiansContactClinic>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useGuardiansContactClinic<
-  TData = Awaited<ReturnType<typeof guardiansContactClinic>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  params: GuardiansContactClinicParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansContactClinic>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof guardiansContactClinic>>,
+      TError,
+      GuardiansContactClinicMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useGuardiansContactClinic<
-  TData = Awaited<ReturnType<typeof guardiansContactClinic>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  params: GuardiansContactClinicParams,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof guardiansContactClinic>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getGuardiansContactClinicQueryOptions(
-    id,
-    params,
-    options,
+): UseMutationResult<
+  Awaited<ReturnType<typeof guardiansContactClinic>>,
+  TError,
+  GuardiansContactClinicMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getGuardiansContactClinicMutationOptions(options),
+    queryClient,
   );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
+};

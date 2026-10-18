@@ -34,7 +34,6 @@ export default defineConfig({
           name: 'httpClient',
         },
         query: {
-          useQuery: true,
           signal: true,
         },
       },

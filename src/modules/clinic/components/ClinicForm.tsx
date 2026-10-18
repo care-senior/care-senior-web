@@ -1,18 +1,16 @@
-import {
-  useState,
-  type HTMLInputTypeAttribute,
-  type SyntheticEvent,
-} from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 
 import type { ClinicResponseDto } from '@/shared/api/generated/model';
-import { Button, useToast } from '@/shared/ui';
+import { Button, TextField, useToast } from '@/shared/ui';
 
 import { useUpdateClinic } from '../api/use-update-clinic';
 import {
   buildUpdatePayload,
+  hasChanges,
   toFormValues,
-  type ClinicFormValues,
 } from '../lib/clinic-form';
+import { clinicFormSchema } from '../schemas/clinic-schema';
 
 import { ActivitiesField } from './ActivitiesField';
 import styles from './ClinicForm.module.css';
@@ -24,87 +22,87 @@ export interface ClinicFormProps {
 export function ClinicForm({ clinic }: ClinicFormProps) {
   const toast = useToast();
   const update = useUpdateClinic();
-  const [values, setValues] = useState<ClinicFormValues>(() =>
-    toFormValues(clinic),
-  );
+  const {
+    register,
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(clinicFormSchema),
+    defaultValues: toFormValues(clinic),
+  });
 
-  const payload = buildUpdatePayload(values, clinic);
-  const isDirty = Object.keys(payload).length > 0;
+  const watched = useWatch({ control });
+  const isDirty = hasChanges({ ...toFormValues(clinic), ...watched }, clinic);
 
-  function setField<K extends keyof ClinicFormValues>(
-    key: K,
-    value: ClinicFormValues[K],
-  ) {
-    setValues((current) => ({ ...current, [key]: value }));
-  }
-
-  function handleSubmit(event: SyntheticEvent) {
-    event.preventDefault();
+  const submit = handleSubmit((values) => {
     if (!isDirty) return;
 
     update.mutate(
-      { id: clinic.id, data: payload },
+      { id: clinic.id, data: buildUpdatePayload(values, clinic) },
       {
         onSuccess: () => toast.success('Dados da clínica salvos.'),
         onError: (error) => toast.error(error.message),
       },
     );
-  }
+  });
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form
+      noValidate
+      className={styles.form}
+      onSubmit={(event) => void submit(event)}
+    >
       <div className={styles.row}>
         <TextField
           label="Nome da clínica"
-          value={values.name}
-          onChange={(v) => setField('name', v)}
           maxLength={150}
-          required
+          error={errors.name?.message}
+          {...register('name')}
         />
         <TextField
           label="Telefone"
           type="tel"
-          value={values.phone}
-          onChange={(v) => setField('phone', v)}
           maxLength={30}
-          required
+          error={errors.phone?.message}
+          {...register('phone')}
         />
       </div>
 
       <TextField
         label="Endereço"
-        value={values.address}
-        onChange={(v) => setField('address', v)}
         maxLength={255}
-        required
+        error={errors.address?.message}
+        {...register('address')}
       />
 
       <div className={styles.row}>
         <TextField
           label="Horário de funcionamento"
-          value={values.operatingHours}
-          onChange={(v) => setField('operatingHours', v)}
           maxLength={150}
+          {...register('operatingHours')}
         />
         <TextField
           label="WhatsApp"
           type="tel"
-          value={values.whatsappPhone}
-          onChange={(v) => setField('whatsappPhone', v)}
           maxLength={30}
+          {...register('whatsappPhone')}
         />
       </div>
 
       <TextField
         label="Responsável técnico"
-        value={values.responsiblePeople}
-        onChange={(v) => setField('responsiblePeople', v)}
         maxLength={150}
+        {...register('responsiblePeople')}
       />
 
-      <ActivitiesField
-        value={values.activities}
-        onChange={(next) => setField('activities', next)}
+      <Controller
+        name="activities"
+        control={control}
+        render={({ field }) => (
+          <ActivitiesField value={field.value} onChange={field.onChange} />
+        )}
       />
 
       <div className={styles.actions}>
@@ -114,42 +112,11 @@ export function ClinicForm({ clinic }: ClinicFormProps) {
         <Button
           variant="ghost"
           disabled={!isDirty || update.isPending}
-          onClick={() => setValues(toFormValues(clinic))}
+          onClick={() => reset(toFormValues(clinic))}
         >
           Cancelar
         </Button>
       </div>
     </form>
-  );
-}
-
-interface TextFieldProps {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  maxLength: number;
-  type?: HTMLInputTypeAttribute;
-  required?: boolean;
-}
-
-function TextField({
-  label,
-  value,
-  onChange,
-  maxLength,
-  type = 'text',
-  required,
-}: TextFieldProps) {
-  return (
-    <label className={styles.field}>
-      <span>{label}</span>
-      <input
-        type={type}
-        value={value}
-        maxLength={maxLength}
-        required={required}
-        onChange={(event) => onChange(event.target.value)}
-      />
-    </label>
   );
 }

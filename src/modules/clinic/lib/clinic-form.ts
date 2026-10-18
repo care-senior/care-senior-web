@@ -3,15 +3,7 @@ import type {
   UpdateClinicDto,
 } from '@/shared/api/generated/model';
 
-export interface ClinicFormValues {
-  name: string;
-  phone: string;
-  address: string;
-  operatingHours: string;
-  whatsappPhone: string;
-  responsiblePeople: string;
-  activities: string[];
-}
+import type { ClinicFormValues } from '../schemas/clinic-schema';
 
 const textFields = [
   'name',
@@ -58,4 +50,11 @@ export function buildUpdatePayload(
   if (!sameActivities) payload.activities = values.activities;
 
   return payload;
+}
+
+export function hasChanges(
+  values: ClinicFormValues,
+  clinic: ClinicResponseDto,
+): boolean {
+  return Object.keys(buildUpdatePayload(values, clinic)).length > 0;
 }

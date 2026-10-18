@@ -5,15 +5,18 @@
  * API do Care Senior — app mobile e web app administrativo
  * OpenAPI spec version: 1.0
  */
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
@@ -223,156 +226,78 @@ export const medicationsCreate = (
   );
 };
 
-export const getMedicationsCreateQueryKey = (
-  createMedicationDto?: BodyType<CreateMedicationDto>,
-) => {
-  return ['POST', `/api/v1/medications`, createMedicationDto] as const;
-};
+export const getMedicationsCreateMutationKey = () =>
+  ['medicationsCreate'] as const;
 
-export const getMedicationsCreateQueryOptions = <
-  TData = Awaited<ReturnType<typeof medicationsCreate>>,
+export const getMedicationsCreateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  createMedicationDto: BodyType<CreateMedicationDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof medicationsCreate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getMedicationsCreateQueryKey(createMedicationDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof medicationsCreate>>
-  > = ({ signal }) =>
-    medicationsCreate(createMedicationDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof medicationsCreate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    MedicationsCreateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof medicationsCreate>>,
+  TError,
+  MedicationsCreateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getMedicationsCreateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof medicationsCreate>>,
+    MedicationsCreateMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return medicationsCreate(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type MedicationsCreateQueryResult = NonNullable<
+export type MedicationsCreateMutationResult = NonNullable<
   Awaited<ReturnType<typeof medicationsCreate>>
 >;
-export type MedicationsCreateQueryError = ErrorType<unknown>;
+export type MedicationsCreateMutationBody = BodyType<CreateMedicationDto>;
+export type MedicationsCreateMutationError = ErrorType<unknown>;
+export type MedicationsCreateMutationVariables = {
+  data: BodyType<CreateMedicationDto>;
+};
 
-export function useMedicationsCreate<
-  TData = Awaited<ReturnType<typeof medicationsCreate>>,
+export const useMedicationsCreate = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  createMedicationDto: BodyType<CreateMedicationDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof medicationsCreate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof medicationsCreate>>,
-          TError,
-          Awaited<ReturnType<typeof medicationsCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useMedicationsCreate<
-  TData = Awaited<ReturnType<typeof medicationsCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createMedicationDto: BodyType<CreateMedicationDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof medicationsCreate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof medicationsCreate>>,
-          TError,
-          Awaited<ReturnType<typeof medicationsCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useMedicationsCreate<
-  TData = Awaited<ReturnType<typeof medicationsCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createMedicationDto: BodyType<CreateMedicationDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof medicationsCreate>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof medicationsCreate>>,
+      TError,
+      MedicationsCreateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof medicationsCreate>>,
+  TError,
+  MedicationsCreateMutationVariables,
+  TContext
+> => {
+  return useMutation(getMedicationsCreateMutationOptions(options), queryClient);
 };
-
-export function useMedicationsCreate<
-  TData = Awaited<ReturnType<typeof medicationsCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createMedicationDto: BodyType<CreateMedicationDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof medicationsCreate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getMedicationsCreateQueryOptions(
-    createMedicationDto,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 export const medicationsFindOne = (
   id: string,
   options?: SecondParameter<typeof httpClient>,
@@ -550,169 +475,79 @@ export const medicationsUpdate = (
   );
 };
 
-export const getMedicationsUpdateQueryKey = (
-  id: string,
-  updateMedicationDto?: BodyType<UpdateMedicationDto>,
-) => {
-  return ['PATCH', `/api/v1/medications/${id}`, updateMedicationDto] as const;
-};
+export const getMedicationsUpdateMutationKey = () =>
+  ['medicationsUpdate'] as const;
 
-export const getMedicationsUpdateQueryOptions = <
-  TData = Awaited<ReturnType<typeof medicationsUpdate>>,
+export const getMedicationsUpdateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  updateMedicationDto: BodyType<UpdateMedicationDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof medicationsUpdate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getMedicationsUpdateQueryKey(id, updateMedicationDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof medicationsUpdate>>
-  > = ({ signal }) =>
-    medicationsUpdate(id, updateMedicationDto, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof medicationsUpdate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    MedicationsUpdateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof medicationsUpdate>>,
+  TError,
+  MedicationsUpdateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getMedicationsUpdateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof medicationsUpdate>>,
+    MedicationsUpdateMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return medicationsUpdate(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type MedicationsUpdateQueryResult = NonNullable<
+export type MedicationsUpdateMutationResult = NonNullable<
   Awaited<ReturnType<typeof medicationsUpdate>>
 >;
-export type MedicationsUpdateQueryError = ErrorType<unknown>;
+export type MedicationsUpdateMutationBody = BodyType<UpdateMedicationDto>;
+export type MedicationsUpdateMutationError = ErrorType<unknown>;
+export type MedicationsUpdateMutationVariables = {
+  id: string;
+  data: BodyType<UpdateMedicationDto>;
+};
 
-export function useMedicationsUpdate<
-  TData = Awaited<ReturnType<typeof medicationsUpdate>>,
+export const useMedicationsUpdate = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  updateMedicationDto: BodyType<UpdateMedicationDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof medicationsUpdate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof medicationsUpdate>>,
-          TError,
-          Awaited<ReturnType<typeof medicationsUpdate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useMedicationsUpdate<
-  TData = Awaited<ReturnType<typeof medicationsUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateMedicationDto: BodyType<UpdateMedicationDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof medicationsUpdate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof medicationsUpdate>>,
-          TError,
-          Awaited<ReturnType<typeof medicationsUpdate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useMedicationsUpdate<
-  TData = Awaited<ReturnType<typeof medicationsUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateMedicationDto: BodyType<UpdateMedicationDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof medicationsUpdate>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof medicationsUpdate>>,
+      TError,
+      MedicationsUpdateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof medicationsUpdate>>,
+  TError,
+  MedicationsUpdateMutationVariables,
+  TContext
+> => {
+  return useMutation(getMedicationsUpdateMutationOptions(options), queryClient);
 };
-
-export function useMedicationsUpdate<
-  TData = Awaited<ReturnType<typeof medicationsUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateMedicationDto: BodyType<UpdateMedicationDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof medicationsUpdate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getMedicationsUpdateQueryOptions(
-    id,
-    updateMedicationDto,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 /**
  * @summary Ends the treatment and keeps it as history.
  */
@@ -727,154 +562,79 @@ export const medicationsDeactivate = (
   );
 };
 
-export const getMedicationsDeactivateQueryKey = (id: string) => {
-  return ['PATCH', `/api/v1/medications/${id}/deactivate`] as const;
-};
+export const getMedicationsDeactivateMutationKey = () =>
+  ['medicationsDeactivate'] as const;
 
-export const getMedicationsDeactivateQueryOptions = <
-  TData = Awaited<ReturnType<typeof medicationsDeactivate>>,
+export const getMedicationsDeactivateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof medicationsDeactivate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getMedicationsDeactivateQueryKey(id);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof medicationsDeactivate>>
-  > = ({ signal }) => medicationsDeactivate(id, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof medicationsDeactivate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    MedicationsDeactivateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof medicationsDeactivate>>,
+  TError,
+  MedicationsDeactivateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getMedicationsDeactivateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof medicationsDeactivate>>,
+    MedicationsDeactivateMutationVariables
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return medicationsDeactivate(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type MedicationsDeactivateQueryResult = NonNullable<
+export type MedicationsDeactivateMutationResult = NonNullable<
   Awaited<ReturnType<typeof medicationsDeactivate>>
 >;
-export type MedicationsDeactivateQueryError = ErrorType<unknown>;
 
-export function useMedicationsDeactivate<
-  TData = Awaited<ReturnType<typeof medicationsDeactivate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof medicationsDeactivate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof medicationsDeactivate>>,
-          TError,
-          Awaited<ReturnType<typeof medicationsDeactivate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useMedicationsDeactivate<
-  TData = Awaited<ReturnType<typeof medicationsDeactivate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof medicationsDeactivate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof medicationsDeactivate>>,
-          TError,
-          Awaited<ReturnType<typeof medicationsDeactivate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useMedicationsDeactivate<
-  TData = Awaited<ReturnType<typeof medicationsDeactivate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof medicationsDeactivate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+export type MedicationsDeactivateMutationError = ErrorType<unknown>;
+export type MedicationsDeactivateMutationVariables = { id: string };
+
 /**
  * @summary Ends the treatment and keeps it as history.
  */
-
-export function useMedicationsDeactivate<
-  TData = Awaited<ReturnType<typeof medicationsDeactivate>>,
+export const useMedicationsDeactivate = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof medicationsDeactivate>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof medicationsDeactivate>>,
+      TError,
+      MedicationsDeactivateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getMedicationsDeactivateQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
+): UseMutationResult<
+  Awaited<ReturnType<typeof medicationsDeactivate>>,
+  TError,
+  MedicationsDeactivateMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getMedicationsDeactivateMutationOptions(options),
+    queryClient,
+  );
+};

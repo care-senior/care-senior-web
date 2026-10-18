@@ -5,15 +5,18 @@
  * API do Care Senior — app mobile e web app administrativo
  * OpenAPI spec version: 1.0
  */
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
@@ -200,132 +203,72 @@ export const roomsCreate = (
   );
 };
 
-export const getRoomsCreateQueryKey = (
-  createRoomDto?: BodyType<CreateRoomDto>,
-) => {
-  return ['POST', `/api/v1/rooms`, createRoomDto] as const;
-};
+export const getRoomsCreateMutationKey = () => ['roomsCreate'] as const;
 
-export const getRoomsCreateQueryOptions = <
-  TData = Awaited<ReturnType<typeof roomsCreate>>,
+export const getRoomsCreateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  createRoomDto: BodyType<CreateRoomDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof roomsCreate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getRoomsCreateQueryKey(createRoomDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof roomsCreate>>> = ({
-    signal,
-  }) => roomsCreate(createRoomDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof roomsCreate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    RoomsCreateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof roomsCreate>>,
+  TError,
+  RoomsCreateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getRoomsCreateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof roomsCreate>>,
+    RoomsCreateMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return roomsCreate(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type RoomsCreateQueryResult = NonNullable<
+export type RoomsCreateMutationResult = NonNullable<
   Awaited<ReturnType<typeof roomsCreate>>
 >;
-export type RoomsCreateQueryError = ErrorType<unknown>;
+export type RoomsCreateMutationBody = BodyType<CreateRoomDto>;
+export type RoomsCreateMutationError = ErrorType<unknown>;
+export type RoomsCreateMutationVariables = { data: BodyType<CreateRoomDto> };
 
-export function useRoomsCreate<
-  TData = Awaited<ReturnType<typeof roomsCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createRoomDto: BodyType<CreateRoomDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof roomsCreate>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof roomsCreate>>,
-          TError,
-          Awaited<ReturnType<typeof roomsCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoomsCreate<
-  TData = Awaited<ReturnType<typeof roomsCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createRoomDto: BodyType<CreateRoomDto>,
+export const useRoomsCreate = <TError = ErrorType<unknown>, TContext = unknown>(
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof roomsCreate>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof roomsCreate>>,
-          TError,
-          Awaited<ReturnType<typeof roomsCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoomsCreate<
-  TData = Awaited<ReturnType<typeof roomsCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createRoomDto: BodyType<CreateRoomDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof roomsCreate>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof roomsCreate>>,
+      TError,
+      RoomsCreateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof roomsCreate>>,
+  TError,
+  RoomsCreateMutationVariables,
+  TContext
+> => {
+  return useMutation(getRoomsCreateMutationOptions(options), queryClient);
 };
-
-export function useRoomsCreate<
-  TData = Awaited<ReturnType<typeof roomsCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createRoomDto: BodyType<CreateRoomDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof roomsCreate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getRoomsCreateQueryOptions(createRoomDto, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 export const roomsFindOne = (
   id: string,
   options?: SecondParameter<typeof httpClient>,
@@ -483,143 +426,75 @@ export const roomsUpdate = (
   );
 };
 
-export const getRoomsUpdateQueryKey = (
-  id: string,
-  updateRoomDto?: BodyType<UpdateRoomDto>,
-) => {
-  return ['PATCH', `/api/v1/rooms/${id}`, updateRoomDto] as const;
-};
+export const getRoomsUpdateMutationKey = () => ['roomsUpdate'] as const;
 
-export const getRoomsUpdateQueryOptions = <
-  TData = Awaited<ReturnType<typeof roomsUpdate>>,
+export const getRoomsUpdateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  updateRoomDto: BodyType<UpdateRoomDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof roomsUpdate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getRoomsUpdateQueryKey(id, updateRoomDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof roomsUpdate>>> = ({
-    signal,
-  }) => roomsUpdate(id, updateRoomDto, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof roomsUpdate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    RoomsUpdateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof roomsUpdate>>,
+  TError,
+  RoomsUpdateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getRoomsUpdateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof roomsUpdate>>,
+    RoomsUpdateMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return roomsUpdate(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type RoomsUpdateQueryResult = NonNullable<
+export type RoomsUpdateMutationResult = NonNullable<
   Awaited<ReturnType<typeof roomsUpdate>>
 >;
-export type RoomsUpdateQueryError = ErrorType<unknown>;
+export type RoomsUpdateMutationBody = BodyType<UpdateRoomDto>;
+export type RoomsUpdateMutationError = ErrorType<unknown>;
+export type RoomsUpdateMutationVariables = {
+  id: string;
+  data: BodyType<UpdateRoomDto>;
+};
 
-export function useRoomsUpdate<
-  TData = Awaited<ReturnType<typeof roomsUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateRoomDto: BodyType<UpdateRoomDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof roomsUpdate>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof roomsUpdate>>,
-          TError,
-          Awaited<ReturnType<typeof roomsUpdate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoomsUpdate<
-  TData = Awaited<ReturnType<typeof roomsUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateRoomDto: BodyType<UpdateRoomDto>,
+export const useRoomsUpdate = <TError = ErrorType<unknown>, TContext = unknown>(
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof roomsUpdate>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof roomsUpdate>>,
-          TError,
-          Awaited<ReturnType<typeof roomsUpdate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoomsUpdate<
-  TData = Awaited<ReturnType<typeof roomsUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateRoomDto: BodyType<UpdateRoomDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof roomsUpdate>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof roomsUpdate>>,
+      TError,
+      RoomsUpdateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof roomsUpdate>>,
+  TError,
+  RoomsUpdateMutationVariables,
+  TContext
+> => {
+  return useMutation(getRoomsUpdateMutationOptions(options), queryClient);
 };
-
-export function useRoomsUpdate<
-  TData = Awaited<ReturnType<typeof roomsUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateRoomDto: BodyType<UpdateRoomDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof roomsUpdate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getRoomsUpdateQueryOptions(id, updateRoomDto, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 /**
  * @summary Only an empty room can be deleted.
  */
@@ -634,133 +509,72 @@ export const roomsRemove = (
   );
 };
 
-export const getRoomsRemoveQueryKey = (id: string) => {
-  return ['DELETE', `/api/v1/rooms/${id}`] as const;
-};
+export const getRoomsRemoveMutationKey = () => ['roomsRemove'] as const;
 
-export const getRoomsRemoveQueryOptions = <
-  TData = Awaited<ReturnType<typeof roomsRemove>>,
+export const getRoomsRemoveMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof roomsRemove>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getRoomsRemoveQueryKey(id);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof roomsRemove>>> = ({
-    signal,
-  }) => roomsRemove(id, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof roomsRemove>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    RoomsRemoveMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof roomsRemove>>,
+  TError,
+  RoomsRemoveMutationVariables,
+  TContext
+> => {
+  const mutationKey = getRoomsRemoveMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof roomsRemove>>,
+    RoomsRemoveMutationVariables
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return roomsRemove(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type RoomsRemoveQueryResult = NonNullable<
+export type RoomsRemoveMutationResult = NonNullable<
   Awaited<ReturnType<typeof roomsRemove>>
 >;
-export type RoomsRemoveQueryError = ErrorType<unknown>;
 
-export function useRoomsRemove<
-  TData = Awaited<ReturnType<typeof roomsRemove>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof roomsRemove>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof roomsRemove>>,
-          TError,
-          Awaited<ReturnType<typeof roomsRemove>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoomsRemove<
-  TData = Awaited<ReturnType<typeof roomsRemove>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof roomsRemove>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof roomsRemove>>,
-          TError,
-          Awaited<ReturnType<typeof roomsRemove>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useRoomsRemove<
-  TData = Awaited<ReturnType<typeof roomsRemove>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof roomsRemove>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+export type RoomsRemoveMutationError = ErrorType<unknown>;
+export type RoomsRemoveMutationVariables = { id: string };
+
 /**
  * @summary Only an empty room can be deleted.
  */
-
-export function useRoomsRemove<
-  TData = Awaited<ReturnType<typeof roomsRemove>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
+export const useRoomsRemove = <TError = ErrorType<unknown>, TContext = unknown>(
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof roomsRemove>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof roomsRemove>>,
+      TError,
+      RoomsRemoveMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getRoomsRemoveQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
+): UseMutationResult<
+  Awaited<ReturnType<typeof roomsRemove>>,
+  TError,
+  RoomsRemoveMutationVariables,
+  TContext
+> => {
+  return useMutation(getRoomsRemoveMutationOptions(options), queryClient);
+};

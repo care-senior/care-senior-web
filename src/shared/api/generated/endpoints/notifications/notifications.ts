@@ -5,15 +5,18 @@
  * API do Care Senior — app mobile e web app administrativo
  * OpenAPI spec version: 1.0
  */
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
@@ -220,143 +223,76 @@ export const notificationsMarkAllRead = (
   );
 };
 
-export const getNotificationsMarkAllReadQueryKey = () => {
-  return ['PATCH', `/api/v1/notifications/read-all`] as const;
-};
+export const getNotificationsMarkAllReadMutationKey = () =>
+  ['notificationsMarkAllRead'] as const;
 
-export const getNotificationsMarkAllReadQueryOptions = <
-  TData = Awaited<ReturnType<typeof notificationsMarkAllRead>>,
+export const getNotificationsMarkAllReadMutationOptions = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(options?: {
-  query?: Partial<
-    UseQueryOptions<
-      Awaited<ReturnType<typeof notificationsMarkAllRead>>,
-      TError,
-      TData
-    >
-  >;
-  request?: SecondParameter<typeof httpClient>;
-}) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getNotificationsMarkAllReadQueryKey();
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof notificationsMarkAllRead>>
-  > = ({ signal }) => notificationsMarkAllRead(requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof notificationsMarkAllRead>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof notificationsMarkAllRead>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = getNotificationsMarkAllReadMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof notificationsMarkAllRead>>,
+    void
+  > = () => {
+    return notificationsMarkAllRead(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type NotificationsMarkAllReadQueryResult = NonNullable<
+export type NotificationsMarkAllReadMutationResult = NonNullable<
   Awaited<ReturnType<typeof notificationsMarkAllRead>>
 >;
-export type NotificationsMarkAllReadQueryError = ErrorType<unknown>;
 
-export function useNotificationsMarkAllRead<
-  TData = Awaited<ReturnType<typeof notificationsMarkAllRead>>,
+export type NotificationsMarkAllReadMutationError = ErrorType<unknown>;
+
+export const useNotificationsMarkAllRead = <
   TError = ErrorType<unknown>,
->(
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsMarkAllRead>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof notificationsMarkAllRead>>,
-          TError,
-          Awaited<ReturnType<typeof notificationsMarkAllRead>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useNotificationsMarkAllRead<
-  TData = Awaited<ReturnType<typeof notificationsMarkAllRead>>,
-  TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsMarkAllRead>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof notificationsMarkAllRead>>,
-          TError,
-          Awaited<ReturnType<typeof notificationsMarkAllRead>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useNotificationsMarkAllRead<
-  TData = Awaited<ReturnType<typeof notificationsMarkAllRead>>,
-  TError = ErrorType<unknown>,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsMarkAllRead>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof notificationsMarkAllRead>>,
+      TError,
+      void,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof notificationsMarkAllRead>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(
+    getNotificationsMarkAllReadMutationOptions(options),
+    queryClient,
+  );
 };
-
-export function useNotificationsMarkAllRead<
-  TData = Awaited<ReturnType<typeof notificationsMarkAllRead>>,
-  TError = ErrorType<unknown>,
->(
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsMarkAllRead>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getNotificationsMarkAllReadQueryOptions(options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 export const notificationsMarkRead = (
   id: string,
   options?: SecondParameter<typeof httpClient>,
@@ -368,151 +304,76 @@ export const notificationsMarkRead = (
   );
 };
 
-export const getNotificationsMarkReadQueryKey = (id: string) => {
-  return ['PATCH', `/api/v1/notifications/${id}/read`] as const;
-};
+export const getNotificationsMarkReadMutationKey = () =>
+  ['notificationsMarkRead'] as const;
 
-export const getNotificationsMarkReadQueryOptions = <
-  TData = Awaited<ReturnType<typeof notificationsMarkRead>>,
+export const getNotificationsMarkReadMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsMarkRead>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getNotificationsMarkReadQueryKey(id);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof notificationsMarkRead>>
-  > = ({ signal }) => notificationsMarkRead(id, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof notificationsMarkRead>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    NotificationsMarkReadMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof notificationsMarkRead>>,
+  TError,
+  NotificationsMarkReadMutationVariables,
+  TContext
+> => {
+  const mutationKey = getNotificationsMarkReadMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof notificationsMarkRead>>,
+    NotificationsMarkReadMutationVariables
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return notificationsMarkRead(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type NotificationsMarkReadQueryResult = NonNullable<
+export type NotificationsMarkReadMutationResult = NonNullable<
   Awaited<ReturnType<typeof notificationsMarkRead>>
 >;
-export type NotificationsMarkReadQueryError = ErrorType<unknown>;
 
-export function useNotificationsMarkRead<
-  TData = Awaited<ReturnType<typeof notificationsMarkRead>>,
+export type NotificationsMarkReadMutationError = ErrorType<unknown>;
+export type NotificationsMarkReadMutationVariables = { id: string };
+
+export const useNotificationsMarkRead = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsMarkRead>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof notificationsMarkRead>>,
-          TError,
-          Awaited<ReturnType<typeof notificationsMarkRead>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useNotificationsMarkRead<
-  TData = Awaited<ReturnType<typeof notificationsMarkRead>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsMarkRead>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof notificationsMarkRead>>,
-          TError,
-          Awaited<ReturnType<typeof notificationsMarkRead>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useNotificationsMarkRead<
-  TData = Awaited<ReturnType<typeof notificationsMarkRead>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsMarkRead>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof notificationsMarkRead>>,
+      TError,
+      NotificationsMarkReadMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof notificationsMarkRead>>,
+  TError,
+  NotificationsMarkReadMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getNotificationsMarkReadMutationOptions(options),
+    queryClient,
+  );
 };
-
-export function useNotificationsMarkRead<
-  TData = Awaited<ReturnType<typeof notificationsMarkRead>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof notificationsMarkRead>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getNotificationsMarkReadQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}

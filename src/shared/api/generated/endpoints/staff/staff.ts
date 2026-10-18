@@ -5,15 +5,18 @@
  * API do Care Senior — app mobile e web app administrativo
  * OpenAPI spec version: 1.0
  */
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
@@ -201,132 +204,72 @@ export const staffCreate = (
   );
 };
 
-export const getStaffCreateQueryKey = (
-  createStaffDto?: BodyType<CreateStaffDto>,
-) => {
-  return ['POST', `/api/v1/staff`, createStaffDto] as const;
-};
+export const getStaffCreateMutationKey = () => ['staffCreate'] as const;
 
-export const getStaffCreateQueryOptions = <
-  TData = Awaited<ReturnType<typeof staffCreate>>,
+export const getStaffCreateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  createStaffDto: BodyType<CreateStaffDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof staffCreate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getStaffCreateQueryKey(createStaffDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof staffCreate>>> = ({
-    signal,
-  }) => staffCreate(createStaffDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof staffCreate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    StaffCreateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof staffCreate>>,
+  TError,
+  StaffCreateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getStaffCreateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof staffCreate>>,
+    StaffCreateMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return staffCreate(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type StaffCreateQueryResult = NonNullable<
+export type StaffCreateMutationResult = NonNullable<
   Awaited<ReturnType<typeof staffCreate>>
 >;
-export type StaffCreateQueryError = ErrorType<unknown>;
+export type StaffCreateMutationBody = BodyType<CreateStaffDto>;
+export type StaffCreateMutationError = ErrorType<unknown>;
+export type StaffCreateMutationVariables = { data: BodyType<CreateStaffDto> };
 
-export function useStaffCreate<
-  TData = Awaited<ReturnType<typeof staffCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createStaffDto: BodyType<CreateStaffDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof staffCreate>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof staffCreate>>,
-          TError,
-          Awaited<ReturnType<typeof staffCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useStaffCreate<
-  TData = Awaited<ReturnType<typeof staffCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createStaffDto: BodyType<CreateStaffDto>,
+export const useStaffCreate = <TError = ErrorType<unknown>, TContext = unknown>(
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof staffCreate>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof staffCreate>>,
-          TError,
-          Awaited<ReturnType<typeof staffCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useStaffCreate<
-  TData = Awaited<ReturnType<typeof staffCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createStaffDto: BodyType<CreateStaffDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof staffCreate>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof staffCreate>>,
+      TError,
+      StaffCreateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof staffCreate>>,
+  TError,
+  StaffCreateMutationVariables,
+  TContext
+> => {
+  return useMutation(getStaffCreateMutationOptions(options), queryClient);
 };
-
-export function useStaffCreate<
-  TData = Awaited<ReturnType<typeof staffCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createStaffDto: BodyType<CreateStaffDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof staffCreate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getStaffCreateQueryOptions(createStaffDto, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 export const staffFindMe = (
   options?: SecondParameter<typeof httpClient>,
   signal?: AbortSignal,
@@ -470,135 +413,77 @@ export const staffUpdateMe = (
   );
 };
 
-export const getStaffUpdateMeQueryKey = (
-  updateOwnProfileDto?: BodyType<UpdateOwnProfileDto>,
-) => {
-  return ['PATCH', `/api/v1/staff/me`, updateOwnProfileDto] as const;
-};
+export const getStaffUpdateMeMutationKey = () => ['staffUpdateMe'] as const;
 
-export const getStaffUpdateMeQueryOptions = <
-  TData = Awaited<ReturnType<typeof staffUpdateMe>>,
+export const getStaffUpdateMeMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  updateOwnProfileDto: BodyType<UpdateOwnProfileDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof staffUpdateMe>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getStaffUpdateMeQueryKey(updateOwnProfileDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof staffUpdateMe>>> = ({
-    signal,
-  }) => staffUpdateMe(updateOwnProfileDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof staffUpdateMe>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    StaffUpdateMeMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof staffUpdateMe>>,
+  TError,
+  StaffUpdateMeMutationVariables,
+  TContext
+> => {
+  const mutationKey = getStaffUpdateMeMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof staffUpdateMe>>,
+    StaffUpdateMeMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return staffUpdateMe(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type StaffUpdateMeQueryResult = NonNullable<
+export type StaffUpdateMeMutationResult = NonNullable<
   Awaited<ReturnType<typeof staffUpdateMe>>
 >;
-export type StaffUpdateMeQueryError = ErrorType<unknown>;
+export type StaffUpdateMeMutationBody = BodyType<UpdateOwnProfileDto>;
+export type StaffUpdateMeMutationError = ErrorType<unknown>;
+export type StaffUpdateMeMutationVariables = {
+  data: BodyType<UpdateOwnProfileDto>;
+};
 
-export function useStaffUpdateMe<
-  TData = Awaited<ReturnType<typeof staffUpdateMe>>,
+export const useStaffUpdateMe = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  updateOwnProfileDto: BodyType<UpdateOwnProfileDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof staffUpdateMe>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof staffUpdateMe>>,
-          TError,
-          Awaited<ReturnType<typeof staffUpdateMe>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useStaffUpdateMe<
-  TData = Awaited<ReturnType<typeof staffUpdateMe>>,
-  TError = ErrorType<unknown>,
->(
-  updateOwnProfileDto: BodyType<UpdateOwnProfileDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof staffUpdateMe>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof staffUpdateMe>>,
-          TError,
-          Awaited<ReturnType<typeof staffUpdateMe>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useStaffUpdateMe<
-  TData = Awaited<ReturnType<typeof staffUpdateMe>>,
-  TError = ErrorType<unknown>,
->(
-  updateOwnProfileDto: BodyType<UpdateOwnProfileDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof staffUpdateMe>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof staffUpdateMe>>,
+      TError,
+      StaffUpdateMeMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof staffUpdateMe>>,
+  TError,
+  StaffUpdateMeMutationVariables,
+  TContext
+> => {
+  return useMutation(getStaffUpdateMeMutationOptions(options), queryClient);
 };
-
-export function useStaffUpdateMe<
-  TData = Awaited<ReturnType<typeof staffUpdateMe>>,
-  TError = ErrorType<unknown>,
->(
-  updateOwnProfileDto: BodyType<UpdateOwnProfileDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof staffUpdateMe>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getStaffUpdateMeQueryOptions(
-    updateOwnProfileDto,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 export const staffFindOne = (
   id: string,
   options?: SecondParameter<typeof httpClient>,
@@ -756,143 +641,75 @@ export const staffUpdate = (
   );
 };
 
-export const getStaffUpdateQueryKey = (
-  id: string,
-  updateStaffDto?: BodyType<UpdateStaffDto>,
-) => {
-  return ['PATCH', `/api/v1/staff/${id}`, updateStaffDto] as const;
-};
+export const getStaffUpdateMutationKey = () => ['staffUpdate'] as const;
 
-export const getStaffUpdateQueryOptions = <
-  TData = Awaited<ReturnType<typeof staffUpdate>>,
+export const getStaffUpdateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  updateStaffDto: BodyType<UpdateStaffDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof staffUpdate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getStaffUpdateQueryKey(id, updateStaffDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof staffUpdate>>> = ({
-    signal,
-  }) => staffUpdate(id, updateStaffDto, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof staffUpdate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    StaffUpdateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof staffUpdate>>,
+  TError,
+  StaffUpdateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getStaffUpdateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof staffUpdate>>,
+    StaffUpdateMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return staffUpdate(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type StaffUpdateQueryResult = NonNullable<
+export type StaffUpdateMutationResult = NonNullable<
   Awaited<ReturnType<typeof staffUpdate>>
 >;
-export type StaffUpdateQueryError = ErrorType<unknown>;
+export type StaffUpdateMutationBody = BodyType<UpdateStaffDto>;
+export type StaffUpdateMutationError = ErrorType<unknown>;
+export type StaffUpdateMutationVariables = {
+  id: string;
+  data: BodyType<UpdateStaffDto>;
+};
 
-export function useStaffUpdate<
-  TData = Awaited<ReturnType<typeof staffUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateStaffDto: BodyType<UpdateStaffDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof staffUpdate>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof staffUpdate>>,
-          TError,
-          Awaited<ReturnType<typeof staffUpdate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useStaffUpdate<
-  TData = Awaited<ReturnType<typeof staffUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateStaffDto: BodyType<UpdateStaffDto>,
+export const useStaffUpdate = <TError = ErrorType<unknown>, TContext = unknown>(
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof staffUpdate>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof staffUpdate>>,
-          TError,
-          Awaited<ReturnType<typeof staffUpdate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useStaffUpdate<
-  TData = Awaited<ReturnType<typeof staffUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateStaffDto: BodyType<UpdateStaffDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof staffUpdate>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof staffUpdate>>,
+      TError,
+      StaffUpdateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof staffUpdate>>,
+  TError,
+  StaffUpdateMutationVariables,
+  TContext
+> => {
+  return useMutation(getStaffUpdateMutationOptions(options), queryClient);
 };
-
-export function useStaffUpdate<
-  TData = Awaited<ReturnType<typeof staffUpdate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  updateStaffDto: BodyType<UpdateStaffDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof staffUpdate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getStaffUpdateQueryOptions(id, updateStaffDto, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 export const staffDeactivate = (
   id: string,
   options?: SecondParameter<typeof httpClient>,
@@ -904,150 +721,72 @@ export const staffDeactivate = (
   );
 };
 
-export const getStaffDeactivateQueryKey = (id: string) => {
-  return ['DELETE', `/api/v1/staff/${id}`] as const;
-};
+export const getStaffDeactivateMutationKey = () => ['staffDeactivate'] as const;
 
-export const getStaffDeactivateQueryOptions = <
-  TData = Awaited<ReturnType<typeof staffDeactivate>>,
+export const getStaffDeactivateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof staffDeactivate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey = queryOptions?.queryKey ?? getStaffDeactivateQueryKey(id);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof staffDeactivate>>> = ({
-    signal,
-  }) => staffDeactivate(id, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof staffDeactivate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    StaffDeactivateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof staffDeactivate>>,
+  TError,
+  StaffDeactivateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getStaffDeactivateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof staffDeactivate>>,
+    StaffDeactivateMutationVariables
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return staffDeactivate(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type StaffDeactivateQueryResult = NonNullable<
+export type StaffDeactivateMutationResult = NonNullable<
   Awaited<ReturnType<typeof staffDeactivate>>
 >;
-export type StaffDeactivateQueryError = ErrorType<unknown>;
 
-export function useStaffDeactivate<
-  TData = Awaited<ReturnType<typeof staffDeactivate>>,
+export type StaffDeactivateMutationError = ErrorType<unknown>;
+export type StaffDeactivateMutationVariables = { id: string };
+
+export const useStaffDeactivate = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof staffDeactivate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof staffDeactivate>>,
-          TError,
-          Awaited<ReturnType<typeof staffDeactivate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useStaffDeactivate<
-  TData = Awaited<ReturnType<typeof staffDeactivate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof staffDeactivate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof staffDeactivate>>,
-          TError,
-          Awaited<ReturnType<typeof staffDeactivate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useStaffDeactivate<
-  TData = Awaited<ReturnType<typeof staffDeactivate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof staffDeactivate>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof staffDeactivate>>,
+      TError,
+      StaffDeactivateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof staffDeactivate>>,
+  TError,
+  StaffDeactivateMutationVariables,
+  TContext
+> => {
+  return useMutation(getStaffDeactivateMutationOptions(options), queryClient);
 };
-
-export function useStaffDeactivate<
-  TData = Awaited<ReturnType<typeof staffDeactivate>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof staffDeactivate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getStaffDeactivateQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}

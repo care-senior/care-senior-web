@@ -5,15 +5,18 @@
  * API do Care Senior — app mobile e web app administrativo
  * OpenAPI spec version: 1.0
  */
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
@@ -223,157 +226,81 @@ export const outingRequestsCreate = (
   );
 };
 
-export const getOutingRequestsCreateQueryKey = (
-  createOutingRequestDto?: BodyType<CreateOutingRequestDto>,
-) => {
-  return ['POST', `/api/v1/outing-requests`, createOutingRequestDto] as const;
-};
+export const getOutingRequestsCreateMutationKey = () =>
+  ['outingRequestsCreate'] as const;
 
-export const getOutingRequestsCreateQueryOptions = <
-  TData = Awaited<ReturnType<typeof outingRequestsCreate>>,
+export const getOutingRequestsCreateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  createOutingRequestDto: BodyType<CreateOutingRequestDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsCreate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getOutingRequestsCreateQueryKey(createOutingRequestDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof outingRequestsCreate>>
-  > = ({ signal }) =>
-    outingRequestsCreate(createOutingRequestDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof outingRequestsCreate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    OutingRequestsCreateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof outingRequestsCreate>>,
+  TError,
+  OutingRequestsCreateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getOutingRequestsCreateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof outingRequestsCreate>>,
+    OutingRequestsCreateMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return outingRequestsCreate(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type OutingRequestsCreateQueryResult = NonNullable<
+export type OutingRequestsCreateMutationResult = NonNullable<
   Awaited<ReturnType<typeof outingRequestsCreate>>
 >;
-export type OutingRequestsCreateQueryError = ErrorType<unknown>;
+export type OutingRequestsCreateMutationBody = BodyType<CreateOutingRequestDto>;
+export type OutingRequestsCreateMutationError = ErrorType<unknown>;
+export type OutingRequestsCreateMutationVariables = {
+  data: BodyType<CreateOutingRequestDto>;
+};
 
-export function useOutingRequestsCreate<
-  TData = Awaited<ReturnType<typeof outingRequestsCreate>>,
+export const useOutingRequestsCreate = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  createOutingRequestDto: BodyType<CreateOutingRequestDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsCreate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof outingRequestsCreate>>,
-          TError,
-          Awaited<ReturnType<typeof outingRequestsCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useOutingRequestsCreate<
-  TData = Awaited<ReturnType<typeof outingRequestsCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createOutingRequestDto: BodyType<CreateOutingRequestDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsCreate>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof outingRequestsCreate>>,
-          TError,
-          Awaited<ReturnType<typeof outingRequestsCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useOutingRequestsCreate<
-  TData = Awaited<ReturnType<typeof outingRequestsCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createOutingRequestDto: BodyType<CreateOutingRequestDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsCreate>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof outingRequestsCreate>>,
+      TError,
+      OutingRequestsCreateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useOutingRequestsCreate<
-  TData = Awaited<ReturnType<typeof outingRequestsCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createOutingRequestDto: BodyType<CreateOutingRequestDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsCreate>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getOutingRequestsCreateQueryOptions(
-    createOutingRequestDto,
-    options,
+): UseMutationResult<
+  Awaited<ReturnType<typeof outingRequestsCreate>>,
+  TError,
+  OutingRequestsCreateMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getOutingRequestsCreateMutationOptions(options),
+    queryClient,
   );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+};
 export const outingRequestsFindOne = (
   id: string,
   options?: SecondParameter<typeof httpClient>,
@@ -548,158 +475,82 @@ export const outingRequestsCancel = (
   );
 };
 
-export const getOutingRequestsCancelQueryKey = (id: string) => {
-  return ['DELETE', `/api/v1/outing-requests/${id}`] as const;
-};
+export const getOutingRequestsCancelMutationKey = () =>
+  ['outingRequestsCancel'] as const;
 
-export const getOutingRequestsCancelQueryOptions = <
-  TData = Awaited<ReturnType<typeof outingRequestsCancel>>,
+export const getOutingRequestsCancelMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsCancel>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getOutingRequestsCancelQueryKey(id);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof outingRequestsCancel>>
-  > = ({ signal }) => outingRequestsCancel(id, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof outingRequestsCancel>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    OutingRequestsCancelMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof outingRequestsCancel>>,
+  TError,
+  OutingRequestsCancelMutationVariables,
+  TContext
+> => {
+  const mutationKey = getOutingRequestsCancelMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof outingRequestsCancel>>,
+    OutingRequestsCancelMutationVariables
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return outingRequestsCancel(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type OutingRequestsCancelQueryResult = NonNullable<
+export type OutingRequestsCancelMutationResult = NonNullable<
   Awaited<ReturnType<typeof outingRequestsCancel>>
 >;
-export type OutingRequestsCancelQueryError = ErrorType<unknown>;
 
-export function useOutingRequestsCancel<
-  TData = Awaited<ReturnType<typeof outingRequestsCancel>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsCancel>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof outingRequestsCancel>>,
-          TError,
-          Awaited<ReturnType<typeof outingRequestsCancel>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useOutingRequestsCancel<
-  TData = Awaited<ReturnType<typeof outingRequestsCancel>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsCancel>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof outingRequestsCancel>>,
-          TError,
-          Awaited<ReturnType<typeof outingRequestsCancel>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useOutingRequestsCancel<
-  TData = Awaited<ReturnType<typeof outingRequestsCancel>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsCancel>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
+export type OutingRequestsCancelMutationError = ErrorType<unknown>;
+export type OutingRequestsCancelMutationVariables = { id: string };
+
 /**
  * @summary Only the guardian who asked, and only while pending.
  */
-
-export function useOutingRequestsCancel<
-  TData = Awaited<ReturnType<typeof outingRequestsCancel>>,
+export const useOutingRequestsCancel = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsCancel>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof outingRequestsCancel>>,
+      TError,
+      OutingRequestsCancelMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getOutingRequestsCancelQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+): UseMutationResult<
+  Awaited<ReturnType<typeof outingRequestsCancel>>,
+  TError,
+  OutingRequestsCancelMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getOutingRequestsCancelMutationOptions(options),
+    queryClient,
+  );
+};
 export const outingRequestsApprove = (
   id: string,
   options?: SecondParameter<typeof httpClient>,
@@ -711,155 +562,79 @@ export const outingRequestsApprove = (
   );
 };
 
-export const getOutingRequestsApproveQueryKey = (id: string) => {
-  return ['POST', `/api/v1/outing-requests/${id}/approve`] as const;
-};
+export const getOutingRequestsApproveMutationKey = () =>
+  ['outingRequestsApprove'] as const;
 
-export const getOutingRequestsApproveQueryOptions = <
-  TData = Awaited<ReturnType<typeof outingRequestsApprove>>,
+export const getOutingRequestsApproveMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsApprove>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getOutingRequestsApproveQueryKey(id);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof outingRequestsApprove>>
-  > = ({ signal }) => outingRequestsApprove(id, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof outingRequestsApprove>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    OutingRequestsApproveMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof outingRequestsApprove>>,
+  TError,
+  OutingRequestsApproveMutationVariables,
+  TContext
+> => {
+  const mutationKey = getOutingRequestsApproveMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof outingRequestsApprove>>,
+    OutingRequestsApproveMutationVariables
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return outingRequestsApprove(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type OutingRequestsApproveQueryResult = NonNullable<
+export type OutingRequestsApproveMutationResult = NonNullable<
   Awaited<ReturnType<typeof outingRequestsApprove>>
 >;
-export type OutingRequestsApproveQueryError = ErrorType<unknown>;
 
-export function useOutingRequestsApprove<
-  TData = Awaited<ReturnType<typeof outingRequestsApprove>>,
+export type OutingRequestsApproveMutationError = ErrorType<unknown>;
+export type OutingRequestsApproveMutationVariables = { id: string };
+
+export const useOutingRequestsApprove = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsApprove>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof outingRequestsApprove>>,
-          TError,
-          Awaited<ReturnType<typeof outingRequestsApprove>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useOutingRequestsApprove<
-  TData = Awaited<ReturnType<typeof outingRequestsApprove>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsApprove>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof outingRequestsApprove>>,
-          TError,
-          Awaited<ReturnType<typeof outingRequestsApprove>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useOutingRequestsApprove<
-  TData = Awaited<ReturnType<typeof outingRequestsApprove>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsApprove>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof outingRequestsApprove>>,
+      TError,
+      OutingRequestsApproveMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof outingRequestsApprove>>,
+  TError,
+  OutingRequestsApproveMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getOutingRequestsApproveMutationOptions(options),
+    queryClient,
+  );
 };
-
-export function useOutingRequestsApprove<
-  TData = Awaited<ReturnType<typeof outingRequestsApprove>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsApprove>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getOutingRequestsApproveQueryOptions(id, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 export const outingRequestsReject = (
   id: string,
   rejectOutingRequestDto: BodyType<RejectOutingRequestDto>,
@@ -878,169 +653,79 @@ export const outingRequestsReject = (
   );
 };
 
-export const getOutingRequestsRejectQueryKey = (
-  id: string,
-  rejectOutingRequestDto?: BodyType<RejectOutingRequestDto>,
-) => {
-  return [
-    'POST',
-    `/api/v1/outing-requests/${id}/reject`,
-    rejectOutingRequestDto,
-  ] as const;
-};
+export const getOutingRequestsRejectMutationKey = () =>
+  ['outingRequestsReject'] as const;
 
-export const getOutingRequestsRejectQueryOptions = <
-  TData = Awaited<ReturnType<typeof outingRequestsReject>>,
+export const getOutingRequestsRejectMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  id: string,
-  rejectOutingRequestDto: BodyType<RejectOutingRequestDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsReject>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getOutingRequestsRejectQueryKey(id, rejectOutingRequestDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof outingRequestsReject>>
-  > = ({ signal }) =>
-    outingRequestsReject(id, rejectOutingRequestDto, requestOptions, signal);
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: id !== null && id !== undefined,
-    ...queryOptions,
-  } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof outingRequestsReject>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    OutingRequestsRejectMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof outingRequestsReject>>,
+  TError,
+  OutingRequestsRejectMutationVariables,
+  TContext
+> => {
+  const mutationKey = getOutingRequestsRejectMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof outingRequestsReject>>,
+    OutingRequestsRejectMutationVariables
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return outingRequestsReject(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type OutingRequestsRejectQueryResult = NonNullable<
+export type OutingRequestsRejectMutationResult = NonNullable<
   Awaited<ReturnType<typeof outingRequestsReject>>
 >;
-export type OutingRequestsRejectQueryError = ErrorType<unknown>;
+export type OutingRequestsRejectMutationBody = BodyType<RejectOutingRequestDto>;
+export type OutingRequestsRejectMutationError = ErrorType<unknown>;
+export type OutingRequestsRejectMutationVariables = {
+  id: string;
+  data: BodyType<RejectOutingRequestDto>;
+};
 
-export function useOutingRequestsReject<
-  TData = Awaited<ReturnType<typeof outingRequestsReject>>,
+export const useOutingRequestsReject = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  id: string,
-  rejectOutingRequestDto: BodyType<RejectOutingRequestDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsReject>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof outingRequestsReject>>,
-          TError,
-          Awaited<ReturnType<typeof outingRequestsReject>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useOutingRequestsReject<
-  TData = Awaited<ReturnType<typeof outingRequestsReject>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  rejectOutingRequestDto: BodyType<RejectOutingRequestDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsReject>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof outingRequestsReject>>,
-          TError,
-          Awaited<ReturnType<typeof outingRequestsReject>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useOutingRequestsReject<
-  TData = Awaited<ReturnType<typeof outingRequestsReject>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  rejectOutingRequestDto: BodyType<RejectOutingRequestDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsReject>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof outingRequestsReject>>,
+      TError,
+      OutingRequestsRejectMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useOutingRequestsReject<
-  TData = Awaited<ReturnType<typeof outingRequestsReject>>,
-  TError = ErrorType<unknown>,
->(
-  id: string,
-  rejectOutingRequestDto: BodyType<RejectOutingRequestDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof outingRequestsReject>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getOutingRequestsRejectQueryOptions(
-    id,
-    rejectOutingRequestDto,
-    options,
+): UseMutationResult<
+  Awaited<ReturnType<typeof outingRequestsReject>>,
+  TError,
+  OutingRequestsRejectMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getOutingRequestsRejectMutationOptions(options),
+    queryClient,
   );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
+};

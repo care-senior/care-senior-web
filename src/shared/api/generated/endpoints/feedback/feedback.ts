@@ -5,15 +5,18 @@
  * API do Care Senior — app mobile e web app administrativo
  * OpenAPI spec version: 1.0
  */
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
@@ -225,131 +228,74 @@ export const feedbackCreate = (
   );
 };
 
-export const getFeedbackCreateQueryKey = (
-  createFeedbackDto?: BodyType<CreateFeedbackDto>,
-) => {
-  return ['POST', `/api/v1/feedback`, createFeedbackDto] as const;
-};
+export const getFeedbackCreateMutationKey = () => ['feedbackCreate'] as const;
 
-export const getFeedbackCreateQueryOptions = <
-  TData = Awaited<ReturnType<typeof feedbackCreate>>,
+export const getFeedbackCreateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  createFeedbackDto: BodyType<CreateFeedbackDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof feedbackCreate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getFeedbackCreateQueryKey(createFeedbackDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof feedbackCreate>>> = ({
-    signal,
-  }) => feedbackCreate(createFeedbackDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof feedbackCreate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    FeedbackCreateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof feedbackCreate>>,
+  TError,
+  FeedbackCreateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getFeedbackCreateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof feedbackCreate>>,
+    FeedbackCreateMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return feedbackCreate(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type FeedbackCreateQueryResult = NonNullable<
+export type FeedbackCreateMutationResult = NonNullable<
   Awaited<ReturnType<typeof feedbackCreate>>
 >;
-export type FeedbackCreateQueryError = ErrorType<unknown>;
+export type FeedbackCreateMutationBody = BodyType<CreateFeedbackDto>;
+export type FeedbackCreateMutationError = ErrorType<unknown>;
+export type FeedbackCreateMutationVariables = {
+  data: BodyType<CreateFeedbackDto>;
+};
 
-export function useFeedbackCreate<
-  TData = Awaited<ReturnType<typeof feedbackCreate>>,
+export const useFeedbackCreate = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  createFeedbackDto: BodyType<CreateFeedbackDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof feedbackCreate>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof feedbackCreate>>,
-          TError,
-          Awaited<ReturnType<typeof feedbackCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useFeedbackCreate<
-  TData = Awaited<ReturnType<typeof feedbackCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createFeedbackDto: BodyType<CreateFeedbackDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof feedbackCreate>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof feedbackCreate>>,
-          TError,
-          Awaited<ReturnType<typeof feedbackCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useFeedbackCreate<
-  TData = Awaited<ReturnType<typeof feedbackCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createFeedbackDto: BodyType<CreateFeedbackDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof feedbackCreate>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof feedbackCreate>>,
+      TError,
+      FeedbackCreateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof feedbackCreate>>,
+  TError,
+  FeedbackCreateMutationVariables,
+  TContext
+> => {
+  return useMutation(getFeedbackCreateMutationOptions(options), queryClient);
 };
-
-export function useFeedbackCreate<
-  TData = Awaited<ReturnType<typeof feedbackCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createFeedbackDto: BodyType<CreateFeedbackDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof feedbackCreate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getFeedbackCreateQueryOptions(
-    createFeedbackDto,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}

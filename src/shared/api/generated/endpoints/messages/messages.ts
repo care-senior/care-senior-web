@@ -5,15 +5,18 @@
  * API do Care Senior — app mobile e web app administrativo
  * OpenAPI spec version: 1.0
  */
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
@@ -225,128 +228,74 @@ export const messagesCreate = (
   );
 };
 
-export const getMessagesCreateQueryKey = (
-  createMessageDto?: BodyType<CreateMessageDto>,
-) => {
-  return ['POST', `/api/v1/messages`, createMessageDto] as const;
-};
+export const getMessagesCreateMutationKey = () => ['messagesCreate'] as const;
 
-export const getMessagesCreateQueryOptions = <
-  TData = Awaited<ReturnType<typeof messagesCreate>>,
+export const getMessagesCreateMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  createMessageDto: BodyType<CreateMessageDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof messagesCreate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getMessagesCreateQueryKey(createMessageDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof messagesCreate>>> = ({
-    signal,
-  }) => messagesCreate(createMessageDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof messagesCreate>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    MessagesCreateMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof messagesCreate>>,
+  TError,
+  MessagesCreateMutationVariables,
+  TContext
+> => {
+  const mutationKey = getMessagesCreateMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof messagesCreate>>,
+    MessagesCreateMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return messagesCreate(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type MessagesCreateQueryResult = NonNullable<
+export type MessagesCreateMutationResult = NonNullable<
   Awaited<ReturnType<typeof messagesCreate>>
 >;
-export type MessagesCreateQueryError = ErrorType<unknown>;
+export type MessagesCreateMutationBody = BodyType<CreateMessageDto>;
+export type MessagesCreateMutationError = ErrorType<unknown>;
+export type MessagesCreateMutationVariables = {
+  data: BodyType<CreateMessageDto>;
+};
 
-export function useMessagesCreate<
-  TData = Awaited<ReturnType<typeof messagesCreate>>,
+export const useMessagesCreate = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  createMessageDto: BodyType<CreateMessageDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof messagesCreate>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof messagesCreate>>,
-          TError,
-          Awaited<ReturnType<typeof messagesCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useMessagesCreate<
-  TData = Awaited<ReturnType<typeof messagesCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createMessageDto: BodyType<CreateMessageDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof messagesCreate>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof messagesCreate>>,
-          TError,
-          Awaited<ReturnType<typeof messagesCreate>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useMessagesCreate<
-  TData = Awaited<ReturnType<typeof messagesCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createMessageDto: BodyType<CreateMessageDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof messagesCreate>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof messagesCreate>>,
+      TError,
+      MessagesCreateMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof messagesCreate>>,
+  TError,
+  MessagesCreateMutationVariables,
+  TContext
+> => {
+  return useMutation(getMessagesCreateMutationOptions(options), queryClient);
 };
-
-export function useMessagesCreate<
-  TData = Awaited<ReturnType<typeof messagesCreate>>,
-  TError = ErrorType<unknown>,
->(
-  createMessageDto: BodyType<CreateMessageDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof messagesCreate>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getMessagesCreateQueryOptions(createMessageDto, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}

@@ -5,15 +5,18 @@
  * API do Care Senior — app mobile e web app administrativo
  * OpenAPI spec version: 1.0
  */
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   DataTag,
   DefinedInitialDataOptions,
   DefinedUseQueryResult,
+  MutationFunction,
   QueryClient,
   QueryFunction,
   QueryKey,
   UndefinedInitialDataOptions,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
@@ -69,130 +72,75 @@ export const authLoginStaff = (
   );
 };
 
-export const getAuthLoginStaffQueryKey = (loginDto?: BodyType<LoginDto>) => {
-  return ['POST', `/api/v1/auth/staff/login`, loginDto] as const;
-};
+export const getAuthLoginStaffMutationKey = () => ['authLoginStaff'] as const;
 
-export const getAuthLoginStaffQueryOptions = <
-  TData = Awaited<ReturnType<typeof authLoginStaff>>,
+export const getAuthLoginStaffMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  loginDto: BodyType<LoginDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof authLoginStaff>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getAuthLoginStaffQueryKey(loginDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof authLoginStaff>>> = ({
-    signal,
-  }) => authLoginStaff(loginDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof authLoginStaff>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    AuthLoginStaffMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authLoginStaff>>,
+  TError,
+  AuthLoginStaffMutationVariables,
+  TContext
+> => {
+  const mutationKey = getAuthLoginStaffMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authLoginStaff>>,
+    AuthLoginStaffMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return authLoginStaff(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type AuthLoginStaffQueryResult = NonNullable<
+export type AuthLoginStaffMutationResult = NonNullable<
   Awaited<ReturnType<typeof authLoginStaff>>
 >;
-export type AuthLoginStaffQueryError = ErrorType<unknown>;
+export type AuthLoginStaffMutationBody = BodyType<LoginDto>;
+export type AuthLoginStaffMutationError = ErrorType<unknown>;
+export type AuthLoginStaffMutationVariables = { data: BodyType<LoginDto> };
 
-export function useAuthLoginStaff<
-  TData = Awaited<ReturnType<typeof authLoginStaff>>,
+export const useAuthLoginStaff = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  loginDto: BodyType<LoginDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof authLoginStaff>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authLoginStaff>>,
-          TError,
-          Awaited<ReturnType<typeof authLoginStaff>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthLoginStaff<
-  TData = Awaited<ReturnType<typeof authLoginStaff>>,
-  TError = ErrorType<unknown>,
->(
-  loginDto: BodyType<LoginDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof authLoginStaff>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authLoginStaff>>,
-          TError,
-          Awaited<ReturnType<typeof authLoginStaff>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthLoginStaff<
-  TData = Awaited<ReturnType<typeof authLoginStaff>>,
-  TError = ErrorType<unknown>,
->(
-  loginDto: BodyType<LoginDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof authLoginStaff>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authLoginStaff>>,
+      TError,
+      AuthLoginStaffMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof authLoginStaff>>,
+  TError,
+  AuthLoginStaffMutationVariables,
+  TContext
+> => {
+  return useMutation(getAuthLoginStaffMutationOptions(options), queryClient);
 };
-
-export function useAuthLoginStaff<
-  TData = Awaited<ReturnType<typeof authLoginStaff>>,
-  TError = ErrorType<unknown>,
->(
-  loginDto: BodyType<LoginDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof authLoginStaff>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getAuthLoginStaffQueryOptions(loginDto, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 export const authLoginGuardian = (
   loginDto: BodyType<LoginDto>,
   options?: SecondParameter<typeof httpClient>,
@@ -210,150 +158,76 @@ export const authLoginGuardian = (
   );
 };
 
-export const getAuthLoginGuardianQueryKey = (loginDto?: BodyType<LoginDto>) => {
-  return ['POST', `/api/v1/auth/guardian/login`, loginDto] as const;
-};
+export const getAuthLoginGuardianMutationKey = () =>
+  ['authLoginGuardian'] as const;
 
-export const getAuthLoginGuardianQueryOptions = <
-  TData = Awaited<ReturnType<typeof authLoginGuardian>>,
+export const getAuthLoginGuardianMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  loginDto: BodyType<LoginDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authLoginGuardian>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getAuthLoginGuardianQueryKey(loginDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof authLoginGuardian>>
-  > = ({ signal }) => authLoginGuardian(loginDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof authLoginGuardian>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    AuthLoginGuardianMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authLoginGuardian>>,
+  TError,
+  AuthLoginGuardianMutationVariables,
+  TContext
+> => {
+  const mutationKey = getAuthLoginGuardianMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authLoginGuardian>>,
+    AuthLoginGuardianMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return authLoginGuardian(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type AuthLoginGuardianQueryResult = NonNullable<
+export type AuthLoginGuardianMutationResult = NonNullable<
   Awaited<ReturnType<typeof authLoginGuardian>>
 >;
-export type AuthLoginGuardianQueryError = ErrorType<unknown>;
+export type AuthLoginGuardianMutationBody = BodyType<LoginDto>;
+export type AuthLoginGuardianMutationError = ErrorType<unknown>;
+export type AuthLoginGuardianMutationVariables = { data: BodyType<LoginDto> };
 
-export function useAuthLoginGuardian<
-  TData = Awaited<ReturnType<typeof authLoginGuardian>>,
+export const useAuthLoginGuardian = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  loginDto: BodyType<LoginDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authLoginGuardian>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authLoginGuardian>>,
-          TError,
-          Awaited<ReturnType<typeof authLoginGuardian>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthLoginGuardian<
-  TData = Awaited<ReturnType<typeof authLoginGuardian>>,
-  TError = ErrorType<unknown>,
->(
-  loginDto: BodyType<LoginDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authLoginGuardian>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authLoginGuardian>>,
-          TError,
-          Awaited<ReturnType<typeof authLoginGuardian>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthLoginGuardian<
-  TData = Awaited<ReturnType<typeof authLoginGuardian>>,
-  TError = ErrorType<unknown>,
->(
-  loginDto: BodyType<LoginDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authLoginGuardian>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authLoginGuardian>>,
+      TError,
+      AuthLoginGuardianMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof authLoginGuardian>>,
+  TError,
+  AuthLoginGuardianMutationVariables,
+  TContext
+> => {
+  return useMutation(getAuthLoginGuardianMutationOptions(options), queryClient);
 };
-
-export function useAuthLoginGuardian<
-  TData = Awaited<ReturnType<typeof authLoginGuardian>>,
-  TError = ErrorType<unknown>,
->(
-  loginDto: BodyType<LoginDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authLoginGuardian>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getAuthLoginGuardianQueryOptions(loginDto, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 /**
  * @summary Guardian self-signup with the resident they look after; starts a session right away.
  */
@@ -374,164 +248,84 @@ export const authRegisterGuardian = (
   );
 };
 
-export const getAuthRegisterGuardianQueryKey = (
-  registerGuardianDto?: BodyType<RegisterGuardianDto>,
-) => {
-  return [
-    'POST',
-    `/api/v1/auth/guardian/register`,
-    registerGuardianDto,
-  ] as const;
-};
+export const getAuthRegisterGuardianMutationKey = () =>
+  ['authRegisterGuardian'] as const;
 
-export const getAuthRegisterGuardianQueryOptions = <
-  TData = Awaited<ReturnType<typeof authRegisterGuardian>>,
+export const getAuthRegisterGuardianMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  registerGuardianDto: BodyType<RegisterGuardianDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authRegisterGuardian>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getAuthRegisterGuardianQueryKey(registerGuardianDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof authRegisterGuardian>>
-  > = ({ signal }) =>
-    authRegisterGuardian(registerGuardianDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof authRegisterGuardian>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    AuthRegisterGuardianMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authRegisterGuardian>>,
+  TError,
+  AuthRegisterGuardianMutationVariables,
+  TContext
+> => {
+  const mutationKey = getAuthRegisterGuardianMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authRegisterGuardian>>,
+    AuthRegisterGuardianMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return authRegisterGuardian(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type AuthRegisterGuardianQueryResult = NonNullable<
+export type AuthRegisterGuardianMutationResult = NonNullable<
   Awaited<ReturnType<typeof authRegisterGuardian>>
 >;
-export type AuthRegisterGuardianQueryError = ErrorType<unknown>;
+export type AuthRegisterGuardianMutationBody = BodyType<RegisterGuardianDto>;
+export type AuthRegisterGuardianMutationError = ErrorType<unknown>;
+export type AuthRegisterGuardianMutationVariables = {
+  data: BodyType<RegisterGuardianDto>;
+};
 
-export function useAuthRegisterGuardian<
-  TData = Awaited<ReturnType<typeof authRegisterGuardian>>,
-  TError = ErrorType<unknown>,
->(
-  registerGuardianDto: BodyType<RegisterGuardianDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authRegisterGuardian>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authRegisterGuardian>>,
-          TError,
-          Awaited<ReturnType<typeof authRegisterGuardian>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthRegisterGuardian<
-  TData = Awaited<ReturnType<typeof authRegisterGuardian>>,
-  TError = ErrorType<unknown>,
->(
-  registerGuardianDto: BodyType<RegisterGuardianDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authRegisterGuardian>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authRegisterGuardian>>,
-          TError,
-          Awaited<ReturnType<typeof authRegisterGuardian>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthRegisterGuardian<
-  TData = Awaited<ReturnType<typeof authRegisterGuardian>>,
-  TError = ErrorType<unknown>,
->(
-  registerGuardianDto: BodyType<RegisterGuardianDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authRegisterGuardian>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
 /**
  * @summary Guardian self-signup with the resident they look after; starts a session right away.
  */
-
-export function useAuthRegisterGuardian<
-  TData = Awaited<ReturnType<typeof authRegisterGuardian>>,
+export const useAuthRegisterGuardian = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  registerGuardianDto: BodyType<RegisterGuardianDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authRegisterGuardian>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authRegisterGuardian>>,
+      TError,
+      AuthRegisterGuardianMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getAuthRegisterGuardianQueryOptions(
-    registerGuardianDto,
-    options,
+): UseMutationResult<
+  Awaited<ReturnType<typeof authRegisterGuardian>>,
+  TError,
+  AuthRegisterGuardianMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getAuthRegisterGuardianMutationOptions(options),
+    queryClient,
   );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+};
 export const authRefresh = (
   refreshTokenDto: BodyType<RefreshTokenDto>,
   options?: SecondParameter<typeof httpClient>,
@@ -549,132 +343,72 @@ export const authRefresh = (
   );
 };
 
-export const getAuthRefreshQueryKey = (
-  refreshTokenDto?: BodyType<RefreshTokenDto>,
-) => {
-  return ['POST', `/api/v1/auth/refresh`, refreshTokenDto] as const;
-};
+export const getAuthRefreshMutationKey = () => ['authRefresh'] as const;
 
-export const getAuthRefreshQueryOptions = <
-  TData = Awaited<ReturnType<typeof authRefresh>>,
+export const getAuthRefreshMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  refreshTokenDto: BodyType<RefreshTokenDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof authRefresh>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getAuthRefreshQueryKey(refreshTokenDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof authRefresh>>> = ({
-    signal,
-  }) => authRefresh(refreshTokenDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof authRefresh>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    AuthRefreshMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authRefresh>>,
+  TError,
+  AuthRefreshMutationVariables,
+  TContext
+> => {
+  const mutationKey = getAuthRefreshMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authRefresh>>,
+    AuthRefreshMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return authRefresh(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type AuthRefreshQueryResult = NonNullable<
+export type AuthRefreshMutationResult = NonNullable<
   Awaited<ReturnType<typeof authRefresh>>
 >;
-export type AuthRefreshQueryError = ErrorType<unknown>;
+export type AuthRefreshMutationBody = BodyType<RefreshTokenDto>;
+export type AuthRefreshMutationError = ErrorType<unknown>;
+export type AuthRefreshMutationVariables = { data: BodyType<RefreshTokenDto> };
 
-export function useAuthRefresh<
-  TData = Awaited<ReturnType<typeof authRefresh>>,
-  TError = ErrorType<unknown>,
->(
-  refreshTokenDto: BodyType<RefreshTokenDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof authRefresh>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authRefresh>>,
-          TError,
-          Awaited<ReturnType<typeof authRefresh>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthRefresh<
-  TData = Awaited<ReturnType<typeof authRefresh>>,
-  TError = ErrorType<unknown>,
->(
-  refreshTokenDto: BodyType<RefreshTokenDto>,
+export const useAuthRefresh = <TError = ErrorType<unknown>, TContext = unknown>(
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof authRefresh>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authRefresh>>,
-          TError,
-          Awaited<ReturnType<typeof authRefresh>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthRefresh<
-  TData = Awaited<ReturnType<typeof authRefresh>>,
-  TError = ErrorType<unknown>,
->(
-  refreshTokenDto: BodyType<RefreshTokenDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof authRefresh>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authRefresh>>,
+      TError,
+      AuthRefreshMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof authRefresh>>,
+  TError,
+  AuthRefreshMutationVariables,
+  TContext
+> => {
+  return useMutation(getAuthRefreshMutationOptions(options), queryClient);
 };
-
-export function useAuthRefresh<
-  TData = Awaited<ReturnType<typeof authRefresh>>,
-  TError = ErrorType<unknown>,
->(
-  refreshTokenDto: BodyType<RefreshTokenDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof authRefresh>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getAuthRefreshQueryOptions(refreshTokenDto, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 export const authLogout = (
   refreshTokenDto: BodyType<RefreshTokenDto>,
   options?: SecondParameter<typeof httpClient>,
@@ -692,132 +426,72 @@ export const authLogout = (
   );
 };
 
-export const getAuthLogoutQueryKey = (
-  refreshTokenDto?: BodyType<RefreshTokenDto>,
-) => {
-  return ['POST', `/api/v1/auth/logout`, refreshTokenDto] as const;
-};
+export const getAuthLogoutMutationKey = () => ['authLogout'] as const;
 
-export const getAuthLogoutQueryOptions = <
-  TData = Awaited<ReturnType<typeof authLogout>>,
+export const getAuthLogoutMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  refreshTokenDto: BodyType<RefreshTokenDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof authLogout>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getAuthLogoutQueryKey(refreshTokenDto);
-
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof authLogout>>> = ({
-    signal,
-  }) => authLogout(refreshTokenDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof authLogout>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    AuthLogoutMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authLogout>>,
+  TError,
+  AuthLogoutMutationVariables,
+  TContext
+> => {
+  const mutationKey = getAuthLogoutMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authLogout>>,
+    AuthLogoutMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return authLogout(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type AuthLogoutQueryResult = NonNullable<
+export type AuthLogoutMutationResult = NonNullable<
   Awaited<ReturnType<typeof authLogout>>
 >;
-export type AuthLogoutQueryError = ErrorType<unknown>;
+export type AuthLogoutMutationBody = BodyType<RefreshTokenDto>;
+export type AuthLogoutMutationError = ErrorType<unknown>;
+export type AuthLogoutMutationVariables = { data: BodyType<RefreshTokenDto> };
 
-export function useAuthLogout<
-  TData = Awaited<ReturnType<typeof authLogout>>,
-  TError = ErrorType<unknown>,
->(
-  refreshTokenDto: BodyType<RefreshTokenDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof authLogout>>, TError, TData>
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authLogout>>,
-          TError,
-          Awaited<ReturnType<typeof authLogout>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthLogout<
-  TData = Awaited<ReturnType<typeof authLogout>>,
-  TError = ErrorType<unknown>,
->(
-  refreshTokenDto: BodyType<RefreshTokenDto>,
+export const useAuthLogout = <TError = ErrorType<unknown>, TContext = unknown>(
   options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof authLogout>>, TError, TData>
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authLogout>>,
-          TError,
-          Awaited<ReturnType<typeof authLogout>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthLogout<
-  TData = Awaited<ReturnType<typeof authLogout>>,
-  TError = ErrorType<unknown>,
->(
-  refreshTokenDto: BodyType<RefreshTokenDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof authLogout>>, TError, TData>
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authLogout>>,
+      TError,
+      AuthLogoutMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof authLogout>>,
+  TError,
+  AuthLogoutMutationVariables,
+  TContext
+> => {
+  return useMutation(getAuthLogoutMutationOptions(options), queryClient);
 };
-
-export function useAuthLogout<
-  TData = Awaited<ReturnType<typeof authLogout>>,
-  TError = ErrorType<unknown>,
->(
-  refreshTokenDto: BodyType<RefreshTokenDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<Awaited<ReturnType<typeof authLogout>>, TError, TData>
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getAuthLogoutQueryOptions(refreshTokenDto, options);
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
 export const authMe = (
   options?: SecondParameter<typeof httpClient>,
   signal?: AbortSignal,
@@ -959,161 +633,81 @@ export const authForgotStaffPassword = (
   );
 };
 
-export const getAuthForgotStaffPasswordQueryKey = (
-  forgotPasswordDto?: BodyType<ForgotPasswordDto>,
-) => {
-  return [
-    'POST',
-    `/api/v1/auth/staff/forgot-password`,
-    forgotPasswordDto,
-  ] as const;
-};
+export const getAuthForgotStaffPasswordMutationKey = () =>
+  ['authForgotStaffPassword'] as const;
 
-export const getAuthForgotStaffPasswordQueryOptions = <
-  TData = Awaited<ReturnType<typeof authForgotStaffPassword>>,
+export const getAuthForgotStaffPasswordMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  forgotPasswordDto: BodyType<ForgotPasswordDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authForgotStaffPassword>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getAuthForgotStaffPasswordQueryKey(forgotPasswordDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof authForgotStaffPassword>>
-  > = ({ signal }) =>
-    authForgotStaffPassword(forgotPasswordDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof authForgotStaffPassword>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    AuthForgotStaffPasswordMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authForgotStaffPassword>>,
+  TError,
+  AuthForgotStaffPasswordMutationVariables,
+  TContext
+> => {
+  const mutationKey = getAuthForgotStaffPasswordMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authForgotStaffPassword>>,
+    AuthForgotStaffPasswordMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return authForgotStaffPassword(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type AuthForgotStaffPasswordQueryResult = NonNullable<
+export type AuthForgotStaffPasswordMutationResult = NonNullable<
   Awaited<ReturnType<typeof authForgotStaffPassword>>
 >;
-export type AuthForgotStaffPasswordQueryError = ErrorType<unknown>;
+export type AuthForgotStaffPasswordMutationBody = BodyType<ForgotPasswordDto>;
+export type AuthForgotStaffPasswordMutationError = ErrorType<unknown>;
+export type AuthForgotStaffPasswordMutationVariables = {
+  data: BodyType<ForgotPasswordDto>;
+};
 
-export function useAuthForgotStaffPassword<
-  TData = Awaited<ReturnType<typeof authForgotStaffPassword>>,
+export const useAuthForgotStaffPassword = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  forgotPasswordDto: BodyType<ForgotPasswordDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authForgotStaffPassword>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authForgotStaffPassword>>,
-          TError,
-          Awaited<ReturnType<typeof authForgotStaffPassword>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthForgotStaffPassword<
-  TData = Awaited<ReturnType<typeof authForgotStaffPassword>>,
-  TError = ErrorType<unknown>,
->(
-  forgotPasswordDto: BodyType<ForgotPasswordDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authForgotStaffPassword>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authForgotStaffPassword>>,
-          TError,
-          Awaited<ReturnType<typeof authForgotStaffPassword>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthForgotStaffPassword<
-  TData = Awaited<ReturnType<typeof authForgotStaffPassword>>,
-  TError = ErrorType<unknown>,
->(
-  forgotPasswordDto: BodyType<ForgotPasswordDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authForgotStaffPassword>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authForgotStaffPassword>>,
+      TError,
+      AuthForgotStaffPasswordMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useAuthForgotStaffPassword<
-  TData = Awaited<ReturnType<typeof authForgotStaffPassword>>,
-  TError = ErrorType<unknown>,
->(
-  forgotPasswordDto: BodyType<ForgotPasswordDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authForgotStaffPassword>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getAuthForgotStaffPasswordQueryOptions(
-    forgotPasswordDto,
-    options,
+): UseMutationResult<
+  Awaited<ReturnType<typeof authForgotStaffPassword>>,
+  TError,
+  AuthForgotStaffPasswordMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getAuthForgotStaffPasswordMutationOptions(options),
+    queryClient,
   );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+};
 export const authForgotGuardianPassword = (
   forgotPasswordDto: BodyType<ForgotPasswordDto>,
   options?: SecondParameter<typeof httpClient>,
@@ -1131,161 +725,82 @@ export const authForgotGuardianPassword = (
   );
 };
 
-export const getAuthForgotGuardianPasswordQueryKey = (
-  forgotPasswordDto?: BodyType<ForgotPasswordDto>,
-) => {
-  return [
-    'POST',
-    `/api/v1/auth/guardian/forgot-password`,
-    forgotPasswordDto,
-  ] as const;
-};
+export const getAuthForgotGuardianPasswordMutationKey = () =>
+  ['authForgotGuardianPassword'] as const;
 
-export const getAuthForgotGuardianPasswordQueryOptions = <
-  TData = Awaited<ReturnType<typeof authForgotGuardianPassword>>,
+export const getAuthForgotGuardianPasswordMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  forgotPasswordDto: BodyType<ForgotPasswordDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authForgotGuardianPassword>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getAuthForgotGuardianPasswordQueryKey(forgotPasswordDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof authForgotGuardianPassword>>
-  > = ({ signal }) =>
-    authForgotGuardianPassword(forgotPasswordDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof authForgotGuardianPassword>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    AuthForgotGuardianPasswordMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authForgotGuardianPassword>>,
+  TError,
+  AuthForgotGuardianPasswordMutationVariables,
+  TContext
+> => {
+  const mutationKey = getAuthForgotGuardianPasswordMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authForgotGuardianPassword>>,
+    AuthForgotGuardianPasswordMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return authForgotGuardianPassword(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type AuthForgotGuardianPasswordQueryResult = NonNullable<
+export type AuthForgotGuardianPasswordMutationResult = NonNullable<
   Awaited<ReturnType<typeof authForgotGuardianPassword>>
 >;
-export type AuthForgotGuardianPasswordQueryError = ErrorType<unknown>;
+export type AuthForgotGuardianPasswordMutationBody =
+  BodyType<ForgotPasswordDto>;
+export type AuthForgotGuardianPasswordMutationError = ErrorType<unknown>;
+export type AuthForgotGuardianPasswordMutationVariables = {
+  data: BodyType<ForgotPasswordDto>;
+};
 
-export function useAuthForgotGuardianPassword<
-  TData = Awaited<ReturnType<typeof authForgotGuardianPassword>>,
+export const useAuthForgotGuardianPassword = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  forgotPasswordDto: BodyType<ForgotPasswordDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authForgotGuardianPassword>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authForgotGuardianPassword>>,
-          TError,
-          Awaited<ReturnType<typeof authForgotGuardianPassword>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthForgotGuardianPassword<
-  TData = Awaited<ReturnType<typeof authForgotGuardianPassword>>,
-  TError = ErrorType<unknown>,
->(
-  forgotPasswordDto: BodyType<ForgotPasswordDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authForgotGuardianPassword>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authForgotGuardianPassword>>,
-          TError,
-          Awaited<ReturnType<typeof authForgotGuardianPassword>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthForgotGuardianPassword<
-  TData = Awaited<ReturnType<typeof authForgotGuardianPassword>>,
-  TError = ErrorType<unknown>,
->(
-  forgotPasswordDto: BodyType<ForgotPasswordDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authForgotGuardianPassword>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authForgotGuardianPassword>>,
+      TError,
+      AuthForgotGuardianPasswordMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useAuthForgotGuardianPassword<
-  TData = Awaited<ReturnType<typeof authForgotGuardianPassword>>,
-  TError = ErrorType<unknown>,
->(
-  forgotPasswordDto: BodyType<ForgotPasswordDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authForgotGuardianPassword>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getAuthForgotGuardianPasswordQueryOptions(
-    forgotPasswordDto,
-    options,
+): UseMutationResult<
+  Awaited<ReturnType<typeof authForgotGuardianPassword>>,
+  TError,
+  AuthForgotGuardianPasswordMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getAuthForgotGuardianPasswordMutationOptions(options),
+    queryClient,
   );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+};
 export const authAcceptStaffInvite = (
   acceptInviteDto: BodyType<AcceptInviteDto>,
   options?: SecondParameter<typeof httpClient>,
@@ -1303,156 +818,81 @@ export const authAcceptStaffInvite = (
   );
 };
 
-export const getAuthAcceptStaffInviteQueryKey = (
-  acceptInviteDto?: BodyType<AcceptInviteDto>,
-) => {
-  return ['POST', `/api/v1/auth/staff/accept-invite`, acceptInviteDto] as const;
-};
+export const getAuthAcceptStaffInviteMutationKey = () =>
+  ['authAcceptStaffInvite'] as const;
 
-export const getAuthAcceptStaffInviteQueryOptions = <
-  TData = Awaited<ReturnType<typeof authAcceptStaffInvite>>,
+export const getAuthAcceptStaffInviteMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  acceptInviteDto: BodyType<AcceptInviteDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authAcceptStaffInvite>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getAuthAcceptStaffInviteQueryKey(acceptInviteDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof authAcceptStaffInvite>>
-  > = ({ signal }) =>
-    authAcceptStaffInvite(acceptInviteDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof authAcceptStaffInvite>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    AuthAcceptStaffInviteMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authAcceptStaffInvite>>,
+  TError,
+  AuthAcceptStaffInviteMutationVariables,
+  TContext
+> => {
+  const mutationKey = getAuthAcceptStaffInviteMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authAcceptStaffInvite>>,
+    AuthAcceptStaffInviteMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return authAcceptStaffInvite(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type AuthAcceptStaffInviteQueryResult = NonNullable<
+export type AuthAcceptStaffInviteMutationResult = NonNullable<
   Awaited<ReturnType<typeof authAcceptStaffInvite>>
 >;
-export type AuthAcceptStaffInviteQueryError = ErrorType<unknown>;
+export type AuthAcceptStaffInviteMutationBody = BodyType<AcceptInviteDto>;
+export type AuthAcceptStaffInviteMutationError = ErrorType<unknown>;
+export type AuthAcceptStaffInviteMutationVariables = {
+  data: BodyType<AcceptInviteDto>;
+};
 
-export function useAuthAcceptStaffInvite<
-  TData = Awaited<ReturnType<typeof authAcceptStaffInvite>>,
+export const useAuthAcceptStaffInvite = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  acceptInviteDto: BodyType<AcceptInviteDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authAcceptStaffInvite>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authAcceptStaffInvite>>,
-          TError,
-          Awaited<ReturnType<typeof authAcceptStaffInvite>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthAcceptStaffInvite<
-  TData = Awaited<ReturnType<typeof authAcceptStaffInvite>>,
-  TError = ErrorType<unknown>,
->(
-  acceptInviteDto: BodyType<AcceptInviteDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authAcceptStaffInvite>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authAcceptStaffInvite>>,
-          TError,
-          Awaited<ReturnType<typeof authAcceptStaffInvite>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthAcceptStaffInvite<
-  TData = Awaited<ReturnType<typeof authAcceptStaffInvite>>,
-  TError = ErrorType<unknown>,
->(
-  acceptInviteDto: BodyType<AcceptInviteDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authAcceptStaffInvite>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authAcceptStaffInvite>>,
+      TError,
+      AuthAcceptStaffInviteMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useAuthAcceptStaffInvite<
-  TData = Awaited<ReturnType<typeof authAcceptStaffInvite>>,
-  TError = ErrorType<unknown>,
->(
-  acceptInviteDto: BodyType<AcceptInviteDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authAcceptStaffInvite>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getAuthAcceptStaffInviteQueryOptions(
-    acceptInviteDto,
-    options,
+): UseMutationResult<
+  Awaited<ReturnType<typeof authAcceptStaffInvite>>,
+  TError,
+  AuthAcceptStaffInviteMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getAuthAcceptStaffInviteMutationOptions(options),
+    queryClient,
   );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+};
 export const authAcceptGuardianInvite = (
   acceptInviteDto: BodyType<AcceptInviteDto>,
   options?: SecondParameter<typeof httpClient>,
@@ -1470,161 +910,81 @@ export const authAcceptGuardianInvite = (
   );
 };
 
-export const getAuthAcceptGuardianInviteQueryKey = (
-  acceptInviteDto?: BodyType<AcceptInviteDto>,
-) => {
-  return [
-    'POST',
-    `/api/v1/auth/guardian/accept-invite`,
-    acceptInviteDto,
-  ] as const;
-};
+export const getAuthAcceptGuardianInviteMutationKey = () =>
+  ['authAcceptGuardianInvite'] as const;
 
-export const getAuthAcceptGuardianInviteQueryOptions = <
-  TData = Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
+export const getAuthAcceptGuardianInviteMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  acceptInviteDto: BodyType<AcceptInviteDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ??
-    getAuthAcceptGuardianInviteQueryKey(acceptInviteDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof authAcceptGuardianInvite>>
-  > = ({ signal }) =>
-    authAcceptGuardianInvite(acceptInviteDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    AuthAcceptGuardianInviteMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
+  TError,
+  AuthAcceptGuardianInviteMutationVariables,
+  TContext
+> => {
+  const mutationKey = getAuthAcceptGuardianInviteMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
+    AuthAcceptGuardianInviteMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return authAcceptGuardianInvite(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type AuthAcceptGuardianInviteQueryResult = NonNullable<
+export type AuthAcceptGuardianInviteMutationResult = NonNullable<
   Awaited<ReturnType<typeof authAcceptGuardianInvite>>
 >;
-export type AuthAcceptGuardianInviteQueryError = ErrorType<unknown>;
+export type AuthAcceptGuardianInviteMutationBody = BodyType<AcceptInviteDto>;
+export type AuthAcceptGuardianInviteMutationError = ErrorType<unknown>;
+export type AuthAcceptGuardianInviteMutationVariables = {
+  data: BodyType<AcceptInviteDto>;
+};
 
-export function useAuthAcceptGuardianInvite<
-  TData = Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
+export const useAuthAcceptGuardianInvite = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  acceptInviteDto: BodyType<AcceptInviteDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
-          TError,
-          Awaited<ReturnType<typeof authAcceptGuardianInvite>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthAcceptGuardianInvite<
-  TData = Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
-  TError = ErrorType<unknown>,
->(
-  acceptInviteDto: BodyType<AcceptInviteDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
-          TError,
-          Awaited<ReturnType<typeof authAcceptGuardianInvite>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthAcceptGuardianInvite<
-  TData = Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
-  TError = ErrorType<unknown>,
->(
-  acceptInviteDto: BodyType<AcceptInviteDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
+      TError,
+      AuthAcceptGuardianInviteMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-
-export function useAuthAcceptGuardianInvite<
-  TData = Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
-  TError = ErrorType<unknown>,
->(
-  acceptInviteDto: BodyType<AcceptInviteDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getAuthAcceptGuardianInviteQueryOptions(
-    acceptInviteDto,
-    options,
+): UseMutationResult<
+  Awaited<ReturnType<typeof authAcceptGuardianInvite>>,
+  TError,
+  AuthAcceptGuardianInviteMutationVariables,
+  TContext
+> => {
+  return useMutation(
+    getAuthAcceptGuardianInviteMutationOptions(options),
+    queryClient,
   );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}
-
+};
 export const authResetPassword = (
   resetPasswordDto: BodyType<ResetPasswordDto>,
   options?: SecondParameter<typeof httpClient>,
@@ -1642,152 +1002,75 @@ export const authResetPassword = (
   );
 };
 
-export const getAuthResetPasswordQueryKey = (
-  resetPasswordDto?: BodyType<ResetPasswordDto>,
-) => {
-  return ['POST', `/api/v1/auth/reset-password`, resetPasswordDto] as const;
-};
+export const getAuthResetPasswordMutationKey = () =>
+  ['authResetPassword'] as const;
 
-export const getAuthResetPasswordQueryOptions = <
-  TData = Awaited<ReturnType<typeof authResetPassword>>,
+export const getAuthResetPasswordMutationOptions = <
   TError = ErrorType<unknown>,
->(
-  resetPasswordDto: BodyType<ResetPasswordDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authResetPassword>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-) => {
-  const { query: queryOptions, request: requestOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getAuthResetPasswordQueryKey(resetPasswordDto);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof authResetPassword>>
-  > = ({ signal }) =>
-    authResetPassword(resetPasswordDto, requestOptions, signal);
-
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof authResetPassword>>,
     TError,
-    TData
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
+    AuthResetPasswordMutationVariables,
+    TContext
+  >;
+  request?: SecondParameter<typeof httpClient>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof authResetPassword>>,
+  TError,
+  AuthResetPasswordMutationVariables,
+  TContext
+> => {
+  const mutationKey = getAuthResetPasswordMutationKey();
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      'mutationKey' in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof authResetPassword>>,
+    AuthResetPasswordMutationVariables
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return authResetPassword(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
 };
 
-export type AuthResetPasswordQueryResult = NonNullable<
+export type AuthResetPasswordMutationResult = NonNullable<
   Awaited<ReturnType<typeof authResetPassword>>
 >;
-export type AuthResetPasswordQueryError = ErrorType<unknown>;
+export type AuthResetPasswordMutationBody = BodyType<ResetPasswordDto>;
+export type AuthResetPasswordMutationError = ErrorType<unknown>;
+export type AuthResetPasswordMutationVariables = {
+  data: BodyType<ResetPasswordDto>;
+};
 
-export function useAuthResetPassword<
-  TData = Awaited<ReturnType<typeof authResetPassword>>,
+export const useAuthResetPassword = <
   TError = ErrorType<unknown>,
+  TContext = unknown,
 >(
-  resetPasswordDto: BodyType<ResetPasswordDto>,
-  options: {
-    query: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authResetPassword>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authResetPassword>>,
-          TError,
-          Awaited<ReturnType<typeof authResetPassword>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): DefinedUseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthResetPassword<
-  TData = Awaited<ReturnType<typeof authResetPassword>>,
-  TError = ErrorType<unknown>,
->(
-  resetPasswordDto: BodyType<ResetPasswordDto>,
   options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authResetPassword>>,
-        TError,
-        TData
-      >
-    > &
-      Pick<
-        UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof authResetPassword>>,
-          TError,
-          Awaited<ReturnType<typeof authResetPassword>>
-        >,
-        'initialData'
-      >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-};
-export function useAuthResetPassword<
-  TData = Awaited<ReturnType<typeof authResetPassword>>,
-  TError = ErrorType<unknown>,
->(
-  resetPasswordDto: BodyType<ResetPasswordDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authResetPassword>>,
-        TError,
-        TData
-      >
+    mutation?: UseMutationOptions<
+      Awaited<ReturnType<typeof authResetPassword>>,
+      TError,
+      AuthResetPasswordMutationVariables,
+      TContext
     >;
     request?: SecondParameter<typeof httpClient>;
   },
   queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
+): UseMutationResult<
+  Awaited<ReturnType<typeof authResetPassword>>,
+  TError,
+  AuthResetPasswordMutationVariables,
+  TContext
+> => {
+  return useMutation(getAuthResetPasswordMutationOptions(options), queryClient);
 };
-
-export function useAuthResetPassword<
-  TData = Awaited<ReturnType<typeof authResetPassword>>,
-  TError = ErrorType<unknown>,
->(
-  resetPasswordDto: BodyType<ResetPasswordDto>,
-  options?: {
-    query?: Partial<
-      UseQueryOptions<
-        Awaited<ReturnType<typeof authResetPassword>>,
-        TError,
-        TData
-      >
-    >;
-    request?: SecondParameter<typeof httpClient>;
-  },
-  queryClient?: QueryClient,
-): UseQueryResult<TData, TError> & {
-  queryKey: DataTag<QueryKey, TData, TError>;
-} {
-  const queryOptions = getAuthResetPasswordQueryOptions(
-    resetPasswordDto,
-    options,
-  );
-
-  const query = useQuery(queryOptions, queryClient) as UseQueryResult<
-    TData,
-    TError
-  > & { queryKey: DataTag<QueryKey, TData, TError> };
-
-  return withQueryKey(query, queryOptions.queryKey);
-}

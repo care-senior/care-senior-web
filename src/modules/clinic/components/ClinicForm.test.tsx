@@ -38,4 +38,39 @@ describe('ClinicForm', () => {
     ).toBeInTheDocument();
     expect(updateClinic).not.toHaveBeenCalled();
   });
+
+  it('salva a atividade digitada mesmo sem apertar Enter', async () => {
+    let body: unknown;
+    server.use(
+      http.patch('*/api/v1/clinics/:id', async ({ request }) => {
+        body = await request.json();
+        return HttpResponse.json(clinic);
+      }),
+    );
+    const user = userEvent.setup();
+    renderWithProviders(<ClinicForm clinic={clinic} />);
+
+    await user.click(screen.getByRole('button', { name: '+ Adicionar' }));
+    await user.type(screen.getByLabelText('Nova atividade'), 'Musicoterapia');
+    await user.click(screen.getByRole('button', { name: 'Salvar alterações' }));
+
+    expect(
+      await screen.findByText('Dados da clínica salvos.'),
+    ).toBeInTheDocument();
+    expect(body).toEqual({ activities: ['Fisioterapia', 'Musicoterapia'] });
+  });
+
+  it('descarta a atividade digitada ao apertar Esc', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<ClinicForm clinic={clinic} />);
+
+    await user.click(screen.getByRole('button', { name: '+ Adicionar' }));
+    await user.type(screen.getByLabelText('Nova atividade'), 'Musicoterapia');
+    await user.keyboard('{Escape}');
+
+    expect(screen.queryByText('Musicoterapia')).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Salvar alterações' }),
+    ).toBeDisabled();
+  });
 });

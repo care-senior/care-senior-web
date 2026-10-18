@@ -15,6 +15,9 @@ export interface ActivitiesFieldProps {
 export function ActivitiesField({ value, onChange }: ActivitiesFieldProps) {
   const labelId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
+  // Fechar o input o remove do DOM, e o Chrome dispara blur nessa remoção;
+  // o ref impede que esse blur salve de novo (ou salve o que o Esc descartou).
+  const editingRef = useRef(false);
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState('');
 
@@ -22,12 +25,20 @@ export function ActivitiesField({ value, onChange }: ActivitiesFieldProps) {
     if (adding) inputRef.current?.focus();
   }, [adding]);
 
-  function commit() {
+  function startAdding() {
+    editingRef.current = true;
+    setAdding(true);
+  }
+
+  function finishAdding(save: boolean) {
+    if (!editingRef.current) return;
+    editingRef.current = false;
+
     const name = draft.trim();
     const exists = value.some(
       (item) => item.toLowerCase() === name.toLowerCase(),
     );
-    if (name && !exists) onChange([...value, name]);
+    if (save && name && !exists) onChange([...value, name]);
     setDraft('');
     setAdding(false);
   }
@@ -35,12 +46,11 @@ export function ActivitiesField({ value, onChange }: ActivitiesFieldProps) {
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (event.key === 'Enter') {
       event.preventDefault(); // não enviar o formulário da clínica
-      commit();
+      finishAdding(true);
     }
     if (event.key === 'Escape') {
       event.stopPropagation();
-      setDraft('');
-      setAdding(false);
+      finishAdding(false);
     }
   }
 
@@ -76,13 +86,11 @@ export function ActivitiesField({ value, onChange }: ActivitiesFieldProps) {
             aria-label="Nova atividade"
             onChange={(event) => setDraft(event.target.value)}
             onKeyDown={handleKeyDown}
-            onBlur={() => {
-              if (!draft.trim()) setAdding(false);
-            }}
+            onBlur={() => finishAdding(true)}
           />
         ) : (
           value.length < MAX_ITEMS && (
-            <Button variant="outline" size="sm" onClick={() => setAdding(true)}>
+            <Button variant="outline" size="sm" onClick={startAdding}>
               + Adicionar
             </Button>
           )

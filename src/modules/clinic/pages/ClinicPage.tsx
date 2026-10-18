@@ -37,7 +37,6 @@ export function ClinicPage() {
   );
 }
 
-
 /*
 import { Card, EmptyState } from '@/shared/ui';
 
